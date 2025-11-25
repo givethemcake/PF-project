@@ -120,10 +120,10 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 
 
 
-	int grid_y = static_cast<int>(player_y + PlayerHeight/2) / cell_size;  
+	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
     				  
 
-			top_mid_up = lvl[static_cast<int>(player_y - cell_size) / cell_size][static_cast<int>(player_x + PlayerWidth / 2) / cell_size];
+			top_mid_up=lvl[static_cast<int>(player_y-cell_size)/cell_size][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
 			
 			
 			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
@@ -149,7 +149,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				}
 				if(Keyboard::isKeyPressed(Keyboard::D)){
 				
-				int grid_x = static_cast<int>(player_x +64) / cell_size;
+				int grid_x=static_cast<int>(player_x+64)/cell_size;
 				
 				
 				
