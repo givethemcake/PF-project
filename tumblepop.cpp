@@ -18,7 +18,13 @@ int screen_y = 1000;
 
 
 
-//todo add collison checck for top border 
+//todo add skeletons 
+
+
+
+
+
+void skeletonMove();
 
 
 
@@ -26,6 +32,10 @@ int screen_y = 1000;
 
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y){
 
+	static int Frame=5;	
+	static int FrameCount=0;
+	
+	
 	int grid_x_Ghost=Ghost_x[i]/64;
 
 
@@ -50,8 +60,27 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
 
 
-	if(!(player_x<Ghost_x[i]-5||player_x>Ghost_x[i]+5)&&!(player_y<Ghost_y[i]-3||player_y>Ghost_y[i]+3))
+	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32))
 		exit(0);
+
+	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, staring y ,widht,height
+
+
+
+	if(FrameCount%120==0)
+		Frame+=52;
+
+
+
+	
+	if(Frame>400)
+		Frame=5;
+
+
+	FrameCount++;
+	return;//end of func
+
+
 }
 
 
@@ -297,7 +326,7 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 
 
 
-		if(!(player_y+velocityY<64))
+		if(!(player_y+velocityY<cell_size))
 		player_y = offset_y;
 		
 		onGround = false;
@@ -423,8 +452,8 @@ int main()
 
 	lvlMusic.openFromFile("Data/mus.ogg");
 	lvlMusic.setVolume(15);
-	lvlMusic.play();
-	lvlMusic.setLoop(true);
+	//lvlMusic.play();
+	//lvlMusic.setLoop(true);
 
 	//player data
 	float player_x = 500;
