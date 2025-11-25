@@ -30,7 +30,7 @@ int screen_y = 1000;
 
 
 void skeletonMove();
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y);
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y,char **lvl);
 void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height);
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height);// handle all ingame movement and collision
 void level_one(char**lvl, int height,int width);
@@ -80,7 +80,10 @@ int main()
 	}
 
 
-	
+	//defining the skeletons
+
+	Sprite SkeletonSp[5];
+	Texture SkeletonTx[5];
 
 
 
@@ -258,7 +261,7 @@ int main()
 
 
 		for(int i=0;i<8;i++) //move five ghosts
-			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y);
+			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl);
 
 
 
@@ -314,7 +317,7 @@ int main()
 
 
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y)
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y,char **lvl)
 {
 
 	static int Frame=5;	
@@ -322,25 +325,41 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	
 	
 	int grid_x_Ghost=Ghost_x[i]/64;
+	int grid_y_Ghost=Ghost_y[i]/64;
 
 
 
-
-	if(!GhostMovingLeft[i])
-		if(grid_x_Ghost+1<width-2 ){
-			Ghost_x[i]+=1;
-			
-		}else
+	if(!GhostMovingLeft[i]){
+		
+		
+		if(lvl[grid_y_Ghost+1][grid_x_Ghost+1]!='#'||lvl[grid_y_Ghost][grid_x_Ghost+1]=='#'){
 			GhostMovingLeft[i]=1;
+		}
+		else
+			if(grid_x_Ghost+1<width-2 ){
+				Ghost_x[i]+=1;
+			
+			}else
+				GhostMovingLeft[i]=1;
+		
+	
+	}
+	else
+	{
+	if(GhostMovingLeft[i])
+
+		if(lvl[grid_y_Ghost+1][grid_x_Ghost]!='#'||lvl[grid_y_Ghost][grid_x_Ghost]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+			GhostMovingLeft[i]=0;
+		}
+		else
+			if(grid_x_Ghost-1>=0 )
+			Ghost_x[i]-=1;
+			else	
+			GhostMovingLeft[i]=0;
+		
 		
 
-	else
-
-	if(GhostMovingLeft[i])
-		if(grid_x_Ghost-1>0 )
-			Ghost_x[i]-=1;
-		else	
-		GhostMovingLeft[i]=0;
+	}
 
 	GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
 
@@ -430,7 +449,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 			top_mid_up=lvl[static_cast<int>(player_y-cell_size)/cell_size][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
 			
 			
-			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
+			if((Keyboard::isKeyPressed(Keyboard::Up))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
 				
 					velocityY-=jumpStrength;
 					isJumping=true;
@@ -439,7 +458,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 					isJumping=false;
 
 
-				if(Keyboard::isKeyPressed(Keyboard::A)){
+				if(Keyboard::isKeyPressed(Keyboard::Left)){
 				int grid_x = static_cast<int>(player_x+5) / cell_size;
     
 					if(lvl[grid_y][grid_x]=='#')
@@ -451,7 +470,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 					}
 					
 				}
-				if(Keyboard::isKeyPressed(Keyboard::D)){
+				if(Keyboard::isKeyPressed(Keyboard::Right)){
 				
 				int grid_x=static_cast<int>(player_x+64)/cell_size;
 				
