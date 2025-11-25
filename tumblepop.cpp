@@ -6,10 +6,8 @@
 #include <SFML/Window.hpp>
 #include<cstdlib>
 #include<ctime>
-<<<<<<< HEAD
+
 //first commit
-=======
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 
 using namespace sf;
 using namespace std;
@@ -37,7 +35,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 	if(!GhostMovingLeft[i])
 		if(grid_x_Ghost+1<width-2 ){
-			Ghost_x[i]+=5;
+			Ghost_x[i]+=1;
 			
 		}else
 			GhostMovingLeft[i]=1;
@@ -47,7 +45,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 	if(GhostMovingLeft[i])
 		if(grid_x_Ghost-1>0 )
-			Ghost_x[i]-=5;
+			Ghost_x[i]-=1;
 		else	
 		GhostMovingLeft[i]=0;
 
@@ -205,11 +203,7 @@ void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSpr
 
 }
 
-<<<<<<< HEAD
-void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth,bool& isJumping)
-=======
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth)
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 {
 	offset_y = player_y;
 
@@ -219,19 +213,11 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
 	char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size];
 
-<<<<<<< HEAD
-	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#'&& !isJumping /*|| bottom_right_down == '#'*/) //making falling more precise 
-=======
 	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' /*|| bottom_right_down == '#'*/) //making falling more precise 
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 	{
 		onGround = true;
 		
 		
-<<<<<<< HEAD
-		
-=======
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 	}
 	else
 	{
@@ -291,7 +277,7 @@ int main()
 
 		//setting the ghost
 		GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
-		GhostSp[i].setScale(3,3);
+		GhostSp[i].setScale(2,2);
 	}
 
 
@@ -495,23 +481,12 @@ int main()
 			
 			
 			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
-<<<<<<< HEAD
-				
-				isJumping=true;
-
-				
-					velocityY-=jumpStrength;
-
-				
-					
-=======
 				if(top_mid_up!='#')
 					velocityY-=jumpStrength;
 				else
 					velocityY+=jumpStrength;
 				
 					isJumping=true;
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 				}else
 					isJumping=false;
 
@@ -569,13 +544,6 @@ int main()
 
 				player_x+=velocityX;
 
-<<<<<<< HEAD
-				
-
-			
-=======
-
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 
 
 
@@ -603,11 +571,7 @@ int main()
 		window.clear();
 
 		display_level(window, lvl, bgTex, bgSprite, blockTexture, blockSprite, height, width, cell_size);
-<<<<<<< HEAD
-		player_gravity(lvl,offset_y,velocityY,onGround,gravity,terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth, isJumping);
-=======
 		player_gravity(lvl,offset_y,velocityY,onGround,gravity,terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
->>>>>>> f67d9c9670f590363ec09fd708ac7bc4b1b72bb6
 		PlayerSprite.setPosition(player_x, player_y);
 		window.draw(PlayerSprite);
 
