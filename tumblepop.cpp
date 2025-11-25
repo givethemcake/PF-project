@@ -213,7 +213,7 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
 	char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size];
 
-	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' /*|| bottom_right_down == '#'*/) //making falling more precise 
+	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' &&velocityY>=0/*|| bottom_right_down == '#'*/) //making falling more precise 
 	{
 		onGround = true;
 		
@@ -401,7 +401,7 @@ int main()
 	char top_mid_up = '\0';
 	char top_left_up = '\0';
 
-	PlayerTexture.loadFromFile("Data/player_right.png");
+	PlayerTexture.loadFromFile("Data/player_left.png");
 	PlayerSprite.setTexture(PlayerTexture);
 	PlayerSprite.setScale(3,3);
 	player_x=cell_size;
@@ -481,12 +481,10 @@ int main()
 			
 			
 			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
-				if(top_mid_up!='#')
-					velocityY-=jumpStrength;
-				else
-					velocityY+=jumpStrength;
 				
+					velocityY-=jumpStrength;
 					isJumping=true;
+
 				}else
 					isJumping=false;
 
@@ -552,7 +550,7 @@ int main()
 				
 
 				//if(velocityX<0){
-					//PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,0,frarmeWidth,frameHeight));
+				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
 				//}
 
 
