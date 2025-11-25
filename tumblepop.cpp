@@ -18,7 +18,7 @@ int screen_y = 1000;
 
 
 
-
+//to do move player movement out of main 
 
 
 
@@ -64,48 +64,118 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 
 
+void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height)
+{
+    
+    int top_y=static_cast<int>(player_y) / cell_size;
+    int bottom_y = static_cast<int>(player_y + PlayerHeight) / cell_size;
+    int left_x = static_cast<int>(player_x) / cell_size;
+    int right_x = static_cast<int>(player_x + PlayerWidth) / cell_size;
+    int mid_x = static_cast<int>(player_x + PlayerWidth / 2) / cell_size;
+    int mid_y = static_cast<int>(player_y + PlayerHeight / 2) / cell_size;
+
+	//player x and y are in pixels diving by cell_size gives the grid cords
+
+
+
+	bool isStuck=true;
+
+
+	while(isStuck){
+
+
+
+
+		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
+			player_y-=1;
+		}else 
+			if(lvl[top_y][mid_x]=='#'){
+
+					player_y+=1;
+
+
+			}else
+			{
+				isStuck=false;
+				break;
+			}
+			
+
+			return;
+
+
+	}
 
 
 
 
 
+}
 
 
 
 
-
-
-
-void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x)// handle all ingame movement and collision
+void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height)// handle all ingame movement and collision
 {
 
 
 
-	if((Keyboard::isKeyPressed(Keyboard::Up))&&onGround==true){
-	
-					velocityY-=jumpStrength;
+	int grid_y = static_cast<int>(player_y + PlayerHeight/2) / cell_size;  
+    				  
+
+			top_mid_up = lvl[static_cast<int>(player_y - cell_size) / cell_size][static_cast<int>(player_x + PlayerWidth / 2) / cell_size];
 			
+			
+			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
 				
+					velocityY-=jumpStrength;
 					isJumping=true;
+
 				}else
 					isJumping=false;
 
 
-				if(Keyboard::isKeyPressed(Keyboard::Left)){
-	
+				if(Keyboard::isKeyPressed(Keyboard::A)){
+				int grid_x = static_cast<int>(player_x+5) / cell_size;
+    
+					if(lvl[grid_y][grid_x]=='#')
+						velocityX=0;
+					else{
 					PlayerTexture.loadFromFile("Data/player_left.png");
 					PlayerSprite.setTexture(PlayerTexture);
 						velocityX-=speed;
-			
+					}
 					
 				}
-				if(Keyboard::isKeyPressed(Keyboard::Right)){
+				if(Keyboard::isKeyPressed(Keyboard::D)){
+				
+				int grid_x = static_cast<int>(player_x +64) / cell_size;
+				
+				
+				
+					if(lvl[grid_y][grid_x]=='#')
+						velocityX=0;
+					else{
 					PlayerTexture.loadFromFile("Data/player_right.png");
 					PlayerSprite.setTexture(PlayerTexture);
 						velocityX+=speed;
-						
+					}	
 					
 				}	
+
+				if(Keyboard::isKeyPressed(Keyboard::Down)&&onGround==true){// this doesnt do anything for some reason
+						
+						if(grid_y<height-2){
+							player_y+=cell_size/2;
+						}
+					
+				}
+				
+				
+				
+				
+				
+				
 
 				//clamp velocity
 				if(velocityX>terminal_Velocity_x)
@@ -119,13 +189,17 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				player_x+=velocityX;
 
 
+
+
+
 				counter=counter>8?1:counter;
+				
 
 				//if(velocityX<0){
-					//PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,0,frarmeWidth,frameHeight));
+				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
 				//}
-	
-			return;
+
+				return;
 
 }
 
@@ -237,6 +311,10 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	{
 		velocityY = 0;
 	}
+
+	//char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size]; //get the center of the player
+
+	
 }
 
 
@@ -394,7 +472,6 @@ int main()
 	char bottom_mid = '\0';
 
 	char bottom_left_down = '\0';
-	char bottom_right_down = '\0';
 	char bottom_mid_down = '\0';
 
 	char top_right_up = '\0';
@@ -459,7 +536,7 @@ int main()
 
 
 
-		for(int i=0;i<5;i++)
+		for(int i=0;i<5;i++) //move five ghosts
 			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y);
 
 
@@ -474,89 +551,10 @@ int main()
 
 
 		//movement( player_x,velocityY, isJumping, velocityX,PlayerTexture,PlayerSprite, onGround, jumpStrength, speed, friction, counter, terminal_Velocity_x);
-			int grid_y = (int)(player_y + PlayerHeight/2) / cell_size;  
-    				  
-
-			top_mid_up = lvl[static_cast<int>(player_y - cell_size) / cell_size][static_cast<int>(player_x + PlayerWidth / 2) / cell_size];
 			
-			
-			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
-				
-					velocityY-=jumpStrength;
-					isJumping=true;
+		playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height);
 
-				}else
-					isJumping=false;
-
-
-				if(Keyboard::isKeyPressed(Keyboard::A)){
-				int grid_x = (int)(player_x+5) / cell_size;
-    
-					if(lvl[grid_y][grid_x]=='#')
-						velocityX=0;
-					else{
-					PlayerTexture.loadFromFile("Data/player_left.png");
-					PlayerSprite.setTexture(PlayerTexture);
-						velocityX-=speed;
-					}
-					
-				}
-				if(Keyboard::isKeyPressed(Keyboard::D)){
-				
-				int grid_x = (int)(player_x +64) / cell_size;
-				
-				
-				
-					if(lvl[grid_y][grid_x]=='#')
-						velocityX=0;
-					else{
-					PlayerTexture.loadFromFile("Data/player_right.png");
-					PlayerSprite.setTexture(PlayerTexture);
-						velocityX+=speed;
-					}	
-					
-				}	
-
-				if(Keyboard::isKeyPressed(Keyboard::Down)&&onGround==true){// this doesnt do anything for some reason
-						
-						if(grid_y<height-2){
-							player_y+=cell_size/2;
-						}
-					
-				}
-				
-				
-				
-				
-				
-				
-
-				//clamp velocity
-				if(velocityX>terminal_Velocity_x)
-					velocityX=terminal_Velocity_x;
-				else if(velocityX<-terminal_Velocity_x)
-					velocityX=-terminal_Velocity_x;
-				 if(!Keyboard::isKeyPressed(Keyboard::D)&&!Keyboard::isKeyPressed(Keyboard::A))
-					velocityX*=friction;
-
-
-				player_x+=velocityX;
-
-
-
-
-
-				counter=counter>8?1:counter;
-				
-
-				//if(velocityX<0){
-				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
-				//}
-
-
-
-
-
+		check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
 
 
 
