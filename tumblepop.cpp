@@ -1,3 +1,10 @@
+
+
+//todo add skeletons 
+//we could maybe move the placement of enemies inside the level fucntions will probably make it easier l8r to do stuff
+
+
+
 #include <iostream>
 #include <fstream>
 #include <cmath>
@@ -7,7 +14,7 @@
 #include<cstdlib>
 #include<ctime>
 
-//first commit
+
 
 using namespace sf;
 using namespace std;
@@ -18,337 +25,19 @@ int screen_y = 1000;
 
 
 
-//todo add skeletons 
-
 
 
 
 
 void skeletonMove();
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y);
+void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height);
+void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height);// handle all ingame movement and collision
+void level_one(char**lvl, int height,int width);
+void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
 
-
-
-
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y){
-
-	static int Frame=5;	
-	static int FrameCount=0;
-	
-	
-	int grid_x_Ghost=Ghost_x[i]/64;
-
-
-
-
-	if(!GhostMovingLeft[i])
-		if(grid_x_Ghost+1<width-2 ){
-			Ghost_x[i]+=1;
-			
-		}else
-			GhostMovingLeft[i]=1;
-		
-
-	else
-
-	if(GhostMovingLeft[i])
-		if(grid_x_Ghost-1>0 )
-			Ghost_x[i]-=1;
-		else	
-		GhostMovingLeft[i]=0;
-
-	GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
-
-
-	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32))
-		exit(0);
-
-	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, staring y ,widht,height
-
-
-
-	if(FrameCount%120==0)
-		Frame+=52;
-
-
-
-	
-	if(Frame>400)
-		Frame=5;
-
-
-	FrameCount++;
-	return;//end of func
-
-
-}
-
-
-
-
-
-
-
-
-
-void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height)
-{
-    
-    int top_y=static_cast<int>(player_y) / cell_size;
-    int bottom_y = static_cast<int>(player_y + PlayerHeight) / cell_size;
-    int left_x = static_cast<int>(player_x) / cell_size;
-    int right_x = static_cast<int>(player_x + PlayerWidth) / cell_size;
-    int mid_x = static_cast<int>(player_x + PlayerWidth / 2) / cell_size;
-    int mid_y = static_cast<int>(player_y + PlayerHeight / 2) / cell_size;
-
-	//player x and y are in pixels diving by cell_size gives the grid cords
-
-
-
-	bool isStuck=true;
-
-
-	while(isStuck){
-
-
-
-
-		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
-			player_y-=1;
-		}else 
-			if(lvl[top_y][mid_x]=='#'){
-
-					player_y+=1;
-
-
-			}else
-			{
-				isStuck=false;
-				break;
-			}
-			
-
-			return;
-
-
-	}
-
-
-
-
-
-}
-
-
-
-
-void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height)// handle all ingame movement and collision
-{
-
-
-
-	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
-    				  
-
-			top_mid_up=lvl[static_cast<int>(player_y-cell_size)/cell_size][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
-			
-			
-			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
-				
-					velocityY-=jumpStrength;
-					isJumping=true;
-
-				}else
-					isJumping=false;
-
-
-				if(Keyboard::isKeyPressed(Keyboard::A)){
-				int grid_x = static_cast<int>(player_x+5) / cell_size;
-    
-					if(lvl[grid_y][grid_x]=='#')
-						velocityX=0;
-					else{
-					PlayerTexture.loadFromFile("Data/player_left.png");
-					PlayerSprite.setTexture(PlayerTexture);
-						velocityX-=speed;
-					}
-					
-				}
-				if(Keyboard::isKeyPressed(Keyboard::D)){
-				
-				int grid_x=static_cast<int>(player_x+64)/cell_size;
-				
-				
-				
-					if(lvl[grid_y][grid_x]=='#')
-						velocityX=0;
-					else{
-					PlayerTexture.loadFromFile("Data/player_right.png");
-					PlayerSprite.setTexture(PlayerTexture);
-						velocityX+=speed;
-					}	
-					
-				}	
-
-				if(Keyboard::isKeyPressed(Keyboard::Down)&&onGround==true){// this doesnt do anything for some reason
-						
-						if(grid_y<height-2){
-							player_y+=cell_size/2;
-						}
-					
-				}
-				
-				
-				
-				
-				
-				
-
-				//clamp velocity
-				if(velocityX>terminal_Velocity_x)
-					velocityX=terminal_Velocity_x;
-				else if(velocityX<-terminal_Velocity_x)
-					velocityX=-terminal_Velocity_x;
-				 if(!Keyboard::isKeyPressed(Keyboard::D)&&!Keyboard::isKeyPressed(Keyboard::A))
-					velocityX*=friction;
-
-
-				player_x+=velocityX;
-
-
-
-
-
-				counter=counter>8?1:counter;
-				
-
-				//if(velocityX<0){
-				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
-				//}
-
-				return;
-
-}
-
-
-
-
-
-
-
-void level_one(char**lvl, int height,int width){
-
-	//declare the border
-
-
-
-
-
-
-
-
-
-	for(int i=0;i<height;i++){
-		for(int j=0;j<width;j++){
-
-
-			if(i==0||i==height-1||j==0||j==width-1)
-				lvl[i][j]='#';
-
-
-			if(i==3&&(j>2&&j<width-3))
-					lvl[i][j]='#';
-
-
-			  if(((i>3 && i<=5)||(i>8 && i<11))&&(j==(width/2)||j==((width/2)-1)) )
-    				lvl[i][j] = '#';
-
-			if(((i==5||i==height-6 )&&(( (j>0&&j<=3) || (j>width-5))||(j==(width/2-2)||j==(width/2+1)) )))
-				lvl[i][j] ='#';
-
-			if(i>5&&i<10 &&(j==(width/2-2)||j==(width/2+1)))
-				lvl[i][j] ='#';
-				
-				
-			if(i==height-4&&(j>2&&j<width-3))
-					lvl[i][j]='#';
-					
-			if( (i==height-8) && ((j>2&&j<8)||(j<width-3&&j>10)))
-					lvl[i][j]='#';
-					
-					
-						
-						
-		
-		}
-	}
-
-}
-
-void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size)
-{
-	window.draw(bgSprite);
-
-	for (int i=0;i<height;i+=1)
-	{
-		for (int j=0;j<width;j+=1)
-		{
-
-			if (lvl[i][j] == '#')
-			{
-				blockSprite.setPosition(j*cell_size,(i* (cell_size)+cell_size/2));//so player appears on top of blocks
-				window.draw(blockSprite);
-			}
-		}
-	}
-
-}
-
-void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth)
-{
-	offset_y=player_y;
-
-	offset_y+=velocityY;
-
-	char bottom_left_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x ) / cell_size];
-	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
-	char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size];
-
-	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' &&velocityY>=0/*|| bottom_right_down == '#'*/) //making falling more precise 
-	{
-		onGround = true;
-		
-		
-	}
-	else
-	{
-
-
-
-
-		if(!(player_y+velocityY<cell_size))
-		player_y = offset_y;
-		
-		onGround = false;
-	}
-
-	if (!onGround)
-	{
-		velocityY += gravity;
-		
-		if (velocityY >= terminal_Velocity) velocityY = terminal_Velocity;
-	}
-
-	else
-	{
-		velocityY = 0;
-	}
-
-	//char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size]; //get the center of the player
-
-	
-}
-
+void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 int main()
 {
@@ -363,19 +52,19 @@ int main()
 
 	//Ghost Prototype
 
-	Sprite GhostSp[5];
+	Sprite GhostSp[8];
 	Texture GhostTx;
 	GhostTx.loadFromFile("Data/Ghost.png");
 	
-	int Ghost_y[5];
-	int Ghost_x[5];
-	bool GhostMovingLeft[5];
+	int Ghost_y[8];
+	int Ghost_x[8];
+	bool GhostMovingLeft[8];
 
-	for(int i=0;i<5;i++)
+	for(int i=0;i<8;i++)
 	{
 
 		Ghost_x[i]=150;
-		Ghost_y[i]=i*2*64;
+		Ghost_y[i]=(i+1)*64;
 		GhostSp[i].setTexture(GhostTx);
 		GhostSp[i].setTextureRect(IntRect(5,5,32,32));	
 		int temp=rand();
@@ -568,7 +257,7 @@ int main()
 
 
 
-		for(int i=0;i<5;i++) //move five ghosts
+		for(int i=0;i<8;i++) //move five ghosts
 			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y);
 
 
@@ -605,7 +294,7 @@ int main()
 
 
 
-		for(int i=0;i<5;i++)
+		for(int i=0;i<8;i++)
 		window.draw(GhostSp[i]);
 
 		window.display();
@@ -624,3 +313,310 @@ int main()
 
 
 
+
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y)
+{
+
+	static int Frame=5;	
+	static int FrameCount=0;
+	
+	
+	int grid_x_Ghost=Ghost_x[i]/64;
+
+
+
+
+	if(!GhostMovingLeft[i])
+		if(grid_x_Ghost+1<width-2 ){
+			Ghost_x[i]+=1;
+			
+		}else
+			GhostMovingLeft[i]=1;
+		
+
+	else
+
+	if(GhostMovingLeft[i])
+		if(grid_x_Ghost-1>0 )
+			Ghost_x[i]-=1;
+		else	
+		GhostMovingLeft[i]=0;
+
+	GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
+
+
+	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32))
+		exit(0);
+
+	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, staring y ,widht,height
+
+
+
+	if(FrameCount%120==0)
+		Frame+=52;
+
+
+
+	
+	if(Frame>400)
+		Frame=5;
+
+
+	FrameCount++;
+	return;//end of func
+
+
+}
+
+
+void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height)
+
+{
+    
+    int top_y=static_cast<int>(player_y) / cell_size;
+    int bottom_y = static_cast<int>(player_y + PlayerHeight) / cell_size;
+    int left_x = static_cast<int>(player_x) / cell_size;
+    int right_x = static_cast<int>(player_x + PlayerWidth) / cell_size;
+    int mid_x = static_cast<int>(player_x + PlayerWidth / 2) / cell_size;
+    int mid_y = static_cast<int>(player_y + PlayerHeight / 2) / cell_size;
+
+	//player x and y are in pixels diving by cell_size gives the grid cords
+
+
+
+	bool isStuck=true;
+
+
+	while(isStuck){
+
+
+
+
+		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
+			player_y-=1;
+		}else 
+			if(lvl[top_y][mid_x]=='#'){
+
+					player_y+=1;
+
+
+			}else
+			{
+				isStuck=false;
+				break;
+			}
+			
+
+			return;
+
+
+	}
+
+
+
+
+
+}
+
+
+void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height)// handle all ingame movement and collision
+{
+
+
+
+	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
+    				  
+
+			top_mid_up=lvl[static_cast<int>(player_y-cell_size)/cell_size][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
+			
+			
+			if((Keyboard::isKeyPressed(Keyboard::W))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
+				
+					velocityY-=jumpStrength;
+					isJumping=true;
+
+				}else
+					isJumping=false;
+
+
+				if(Keyboard::isKeyPressed(Keyboard::A)){
+				int grid_x = static_cast<int>(player_x+5) / cell_size;
+    
+					if(lvl[grid_y][grid_x]=='#')
+						velocityX=0;
+					else{
+					PlayerTexture.loadFromFile("Data/player_left.png");
+					PlayerSprite.setTexture(PlayerTexture);
+						velocityX-=speed;
+					}
+					
+				}
+				if(Keyboard::isKeyPressed(Keyboard::D)){
+				
+				int grid_x=static_cast<int>(player_x+64)/cell_size;
+				
+				
+				
+					if(lvl[grid_y][grid_x]=='#')
+						velocityX=0;
+					else{
+					PlayerTexture.loadFromFile("Data/player_right.png");
+					PlayerSprite.setTexture(PlayerTexture);
+						velocityX+=speed;
+					}	
+					
+				}	
+
+				if(Keyboard::isKeyPressed(Keyboard::Down)&&onGround==true){// this doesnt do anything for some reason
+						
+						if(grid_y<height-2){
+							player_y+=cell_size/2;
+						}
+					
+				}
+				
+				
+				
+				
+				
+				
+
+				//clamp velocity
+				if(velocityX>terminal_Velocity_x)
+					velocityX=terminal_Velocity_x;
+				else if(velocityX<-terminal_Velocity_x)
+					velocityX=-terminal_Velocity_x;
+				 if(!Keyboard::isKeyPressed(Keyboard::D)&&!Keyboard::isKeyPressed(Keyboard::A))
+					velocityX*=friction;
+
+
+				player_x+=velocityX;
+
+
+
+
+
+				counter=counter>8?1:counter;
+				
+
+				//if(velocityX<0){
+				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
+				//}
+
+				return;
+
+}
+
+
+void level_one(char**lvl, int height,int width)
+{
+
+	//declare the border
+
+
+	for(int i=0;i<height;i++){
+		for(int j=0;j<width;j++){
+
+
+			if(i==0||i==height-1||j==0||j==width-1)
+				lvl[i][j]='#';
+
+
+			if(i==3&&(j>2&&j<width-3))
+					lvl[i][j]='#';
+
+
+			  if(((i>3 && i<=5)||(i>8 && i<11))&&(j==(width/2)||j==((width/2)-1)) )
+    				lvl[i][j] = '#';
+
+			if(((i==5||i==height-6 )&&(( (j>0&&j<=3) || (j>width-5))||(j==(width/2-2)||j==(width/2+1)) )))
+				lvl[i][j] ='#';
+
+			if(i>5&&i<10 &&(j==(width/2-2)||j==(width/2+1)))
+				lvl[i][j] ='#';
+				
+				
+			if(i==height-4&&(j>2&&j<width-3))
+					lvl[i][j]='#';
+					
+			if( (i==height-8) && ((j>2&&j<8)||(j<width-3&&j>10)))
+					lvl[i][j]='#';
+					
+					
+						
+						
+		
+		}
+	}
+
+}
+
+
+
+void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size)
+{
+	window.draw(bgSprite);
+
+	for (int i=0;i<height;i+=1)
+	{
+		for (int j=0;j<width;j+=1)
+		{
+
+			if (lvl[i][j] == '#')
+			{
+				blockSprite.setPosition(j*cell_size,(i* (cell_size)+cell_size/2));//so player appears on top of blocks
+				window.draw(blockSprite);
+			}
+		}
+	}
+
+}
+
+
+
+void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth)
+
+{
+
+	offset_y=player_y;
+
+	offset_y+=velocityY;
+
+	char bottom_left_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x ) / cell_size];
+	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
+	char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size];
+
+	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' &&velocityY>=0/*|| bottom_right_down == '#'*/) //making falling more precise 
+	{
+		onGround = true;
+		
+		
+	}
+	else
+	{
+
+
+
+
+		if(!(player_y+velocityY<cell_size))
+		player_y = offset_y;
+		
+		onGround = false;
+	}
+
+	if (!onGround)
+	{
+		velocityY += gravity;
+		
+		if (velocityY >= terminal_Velocity) velocityY = terminal_Velocity;
+	}
+
+	else
+	{
+		velocityY = 0;
+	}
+
+	//char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size]; //get the center of the player
+
+	
+}
