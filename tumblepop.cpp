@@ -18,9 +18,7 @@ int screen_y = 1000;
 
 
 
-//to do move player movement out of main 
-
-
+//todo add collison checck for top border 
 
 
 
@@ -262,14 +260,14 @@ void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSpr
 {
 	window.draw(bgSprite);
 
-	for (int i = 0; i < height; i += 1)
+	for (int i=0;i<height;i+=1)
 	{
-		for (int j = 0; j < width; j += 1)
+		for (int j=0;j<width;j+=1)
 		{
 
 			if (lvl[i][j] == '#')
 			{
-				blockSprite.setPosition(j * cell_size, (i * (cell_size)+cell_size/2));//so player appears on top of blocks
+				blockSprite.setPosition(j*cell_size,(i* (cell_size)+cell_size/2));//so player appears on top of blocks
 				window.draw(blockSprite);
 			}
 		}
@@ -279,9 +277,9 @@ void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSpr
 
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth)
 {
-	offset_y = player_y;
+	offset_y=player_y;
 
-	offset_y += velocityY;
+	offset_y+=velocityY;
 
 	char bottom_left_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x ) / cell_size];
 	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
@@ -295,6 +293,11 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	}
 	else
 	{
+
+
+
+
+		if(!(player_y+velocityY<64))
 		player_y = offset_y;
 		
 		onGround = false;
