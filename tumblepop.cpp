@@ -30,7 +30,7 @@ int screen_y = 1000;
 
 
 void skeletonMove();
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y,char **lvl);
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height);
 void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height);
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height);// handle all ingame movement and collision
 void level_one(char**lvl, int height,int width);
@@ -74,10 +74,24 @@ int main()
 			GhostMovingLeft[i]=1;
 
 
-		//setting the ghost
-		GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
+		//setting the ghost 1 3 5 7
+		GhostSp[i].setPosition(Ghost_y[i],Ghost_x[i]);
 		GhostSp[i].setScale(2,2);
-	}
+	}	
+		Ghost_x[0]=16*64;
+		Ghost_y[0]=4*64;
+		
+		Ghost_x[2]=11*64;
+		Ghost_y[2]=6*64;
+
+		Ghost_x[4]=10*64;
+		Ghost_y[4]=10*64;
+
+		Ghost_x[6]=16*64;
+		Ghost_y[6]=8*64;
+
+
+
 
 
 	//defining the skeletons
@@ -159,7 +173,7 @@ int main()
 	float friction=0.8;
 	float acceleration=1;
 
-	const float jumpStrength = 20; // Initial jump velocity
+	const float jumpStrength = 17; // Initial jump velocity
 	const float gravity = 1;  // Gravity acceleration
 
 	bool isJumping = false;  // Track if jumping
@@ -206,7 +220,7 @@ int main()
 	PlayerSprite.setTexture(PlayerTexture);
 	PlayerSprite.setScale(3,3);
 	player_x=cell_size;
-	player_y=(height - 2) * cell_size - PlayerHeight;
+	player_y=(height-2)*cell_size-PlayerHeight;
 	PlayerSprite.setPosition(player_x, player_y);
 
 
@@ -261,7 +275,8 @@ int main()
 
 
 		for(int i=0;i<8;i++) //move five ghosts
-			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl);
+			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height
+			);
 
 
 
@@ -317,7 +332,7 @@ int main()
 
 
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,int player_x,int player_y,char **lvl)
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height)
 {
 
 	static int Frame=5;	
@@ -365,7 +380,12 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 
 	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32))
-		exit(0);
+		{
+			player_x=cell_size;
+			player_y=(height-2)*cell_size-PlayerHeight;
+			PlayerSprite.setPosition(player_y,player_x);
+
+		}
 
 	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, staring y ,widht,height
 
