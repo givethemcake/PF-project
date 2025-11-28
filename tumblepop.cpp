@@ -35,8 +35,7 @@ void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY,
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height);// handle all ingame movement and collision
 void level_one(char**lvl, int height,int width);
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
-
-
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height);
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 int main()
@@ -96,8 +95,58 @@ int main()
 
 	//defining the skeletons
 
-	Sprite SkeletonSp[5];
-	Texture SkeletonTx[5];
+	Sprite skeletonSp[8];
+	Texture skeletonTx;
+	skeletonTx.loadFromFile("Data/skeleton.png");
+	
+	int skeleton_y[8];
+	int skeleton_x[8];
+	bool skeletonMovingLeft[8];
+
+	for(int i=0;i<8;i++)
+	{
+
+		skeleton_x[i]=150;
+		skeleton_y[i]=(i+1)*64;
+		skeletonSp[i].setTexture(skeletonTx);
+		skeletonSp[i].setTextureRect(IntRect(8,0,32,110));
+		int temp=rand();
+		if(temp%2==0)
+			skeletonMovingLeft[i]=0;
+		else
+			skeletonMovingLeft[i]=1;
+
+
+		//setting the skeleton 1 3 5 7
+		
+	}	
+		skeleton_x[0]=16*64;
+		skeleton_y[0]=(4*64);
+		
+		skeleton_x[2]=11*64;
+		skeleton_y[2]=6*64;
+
+		skeleton_x[4]=10*64;
+		skeleton_y[4]=10*64;
+
+		skeleton_x[6]=16*64;
+		skeleton_y[6]=8*64;
+
+
+	for(int i=0;i<8;i++){
+
+
+		skeleton_y[i]-=45;
+		skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
+		skeletonSp[i].setScale(2,2);
+
+	}
+
+
+
+
+
+
 
 
 
@@ -173,7 +222,7 @@ int main()
 	float friction=0.8;
 	float acceleration=1;
 
-	const float jumpStrength = 17; // Initial jump velocity
+	const float jumpStrength = 19; // Initial jump velocity
 	const float gravity = 1;  // Gravity acceleration
 
 	bool isJumping = false;  // Track if jumping
@@ -274,10 +323,11 @@ int main()
 
 
 
-		for(int i=0;i<8;i++) //move five ghosts
-			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height
-			);
-
+		for(int i=0;i<8;i++)
+		{ //move five ghosts
+			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height);
+			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height);
+		}
 
 
 
@@ -312,9 +362,10 @@ int main()
 
 
 
-		for(int i=0;i<8;i++)
-		window.draw(GhostSp[i]);
-
+		for(int i=0;i<8;i++){
+			window.draw(GhostSp[i]);
+			window.draw(skeletonSp[i]);
+		}
 		window.display();
 	}
 
@@ -464,15 +515,56 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 
 
 	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
-    				  
+    	
+		int top_mid_up1;		
+		int top_mid_up2;
+		//int top_mid_up=lvl[(static_cast<int>(player_y-cell_size)/cell_size)][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
+		int top_left_up1,top_right_up1,top_left_up2,top_right_up2;
 
-			top_mid_up=lvl[static_cast<int>(player_y-cell_size)/cell_size][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
-			
-			
-			if((Keyboard::isKeyPressed(Keyboard::Up))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
+		int bottom_mid1;
+		int botttom_mid2;
+
+
+
+
+			if((static_cast<int>(player_y-cell_size)/cell_size)-2>-1){
+				top_mid_up1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)-1][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
+				top_mid_up2=lvl[(static_cast<int>((player_y-cell_size)/cell_size)-2)][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
 				
-					velocityY-=jumpStrength;
-					isJumping=true;
+				top_left_up1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)-1][static_cast<int>(player_x+PlayerWidth/2)/cell_size-1];
+				top_left_up2=lvl[(static_cast<int>((player_y-cell_size)/cell_size)-2)][static_cast<int>(player_x+PlayerWidth/2)/cell_size-1];
+				
+				top_right_up1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)-1][static_cast<int>(player_x+PlayerWidth/2)/cell_size+1];
+				top_right_up2=lvl[(static_cast<int>((player_y-cell_size)/cell_size)-2)][static_cast<int>(player_x+PlayerWidth/2)/cell_size+1];
+				
+			}
+
+			if((static_cast<int>(player_y-cell_size)/cell_size)+3<height){
+				bottom_mid1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)+3][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
+				botttom_mid2=lvl[(static_cast<int>(player_y-cell_size)/cell_size)+2][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
+			}
+
+
+
+			if((Keyboard::isKeyPressed(Keyboard::Up))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
+
+					if(!((top_mid_up1=='#'&&top_mid_up2=='#')/*||(top_left_up1=='#'&&top_left_up2=='#')||(top_right_up1=='#'&&top_right_up2=='#')*/)){
+
+									
+							velocityY-=jumpStrength;
+							isJumping=true;
+					}	
+					/*else
+					{
+						if(top_mid_up!='#')
+							velocityY-=jumpStrength;
+						else
+							velocityY+=jumpStrength;
+							isJumping=true;
+
+						}					
+				*/
+				
 
 				}else
 					isJumping=false;
@@ -509,7 +601,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				if(Keyboard::isKeyPressed(Keyboard::Down)&&onGround==true){// this doesnt do anything for some reason
 						
 						if(grid_y<height-2){
-							player_y+=cell_size/2;
+							if(!(bottom_mid1=='#'&&botttom_mid2=='#'))
+								player_y+=cell_size/2;
 						}
 					
 				}
@@ -658,4 +751,79 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	//char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size]; //get the center of the player
 
 	
+}
+
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height)
+{
+
+	static int Frame=5;	
+	static int FrameCount=0;
+	
+	
+	int grid_x_skeleton=skeleton_x[i]/64;
+	int grid_y_skeleton=(skeleton_y[i]+45)/64;
+
+
+
+	if(!skeletonMovingLeft[i]){
+		
+		
+		if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
+			skeletonMovingLeft[i]=1;
+		}
+		else
+			if(grid_x_skeleton+1<width-2 ){
+				skeleton_x[i]+=1;
+			
+			}else
+				skeletonMovingLeft[i]=1;
+		
+	
+	}
+	else
+	{
+	if(skeletonMovingLeft[i])
+
+		if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+			skeletonMovingLeft[i]=0;
+		}
+		else
+			if(grid_x_skeleton-1>=0 )
+			skeleton_x[i]-=1;
+			else	
+			skeletonMovingLeft[i]=0;
+		
+		
+
+	}
+
+	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
+
+
+	if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32))
+		{
+			player_x=cell_size;
+			player_y=(height-2)*cell_size-PlayerHeight;
+			PlayerSprite.setPosition(player_y,player_x);
+
+		}
+
+	//skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
+
+
+
+	if(FrameCount%120==0)
+		Frame+=40;
+
+
+
+	
+	if(Frame>400)
+		Frame=8;
+
+
+	FrameCount++;
+	return;//end of func
+
+
 }
