@@ -103,7 +103,8 @@ int main()
 	
 	int skeleton_y[4];
 	int skeleton_x[4];
-	bool skeletonMovingLeft[8];
+	bool skeletonMovingLeft[4];
+	bool SkeletonIdle[4]={0};
 
 	for(int i=0;i<4;i++)
 	{
@@ -769,7 +770,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	static int currentSkeleton=0;
 	static bool posChangeHappened=0;
 	static int FramePosForChange;
-	static int Frame=5;	
+	static int Frame=192;	
 	static int FrameCount=0;
 	int grid_x_skeleton=skeleton_x[i]/64;
 	int grid_y_skeleton=(skeleton_y[i]+45)/64;
@@ -840,10 +841,17 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 		}
 
-	//skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
-
+	skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
 	
-
+	
+	if(!skeletonMovingLeft[i]){
+		skeletonSp[i].setScale(-2,2);
+		skeletonSp[i].setOrigin(32,0);
+	}
+	else {
+		skeletonSp[i].setScale(2,2);
+		skeletonSp[i].setOrigin(0,0);	
+	}
 		//ensuer enouh frames have passed for random movement change again
 
 
@@ -889,10 +897,12 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 		// }
 	}
 
+	if(FrameCount%120==0)
+		Frame+=33;
 
 	
-	if(Frame>400)
-		Frame=8;
+	if(Frame>300)
+		Frame=192;
 
 
 	FrameCount++;
