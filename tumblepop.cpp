@@ -29,13 +29,13 @@ int screen_y = 1000;
 
 
 
-void skeletonMove();
+
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height);
 void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height);
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height);// handle all ingame movement and collision
 void level_one(char**lvl, int height,int width);
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height);
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[]);
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 int main()
@@ -104,7 +104,7 @@ int main()
 	int skeleton_y[4];
 	int skeleton_x[4];
 	bool skeletonMovingLeft[4];
-	bool SkeletonIdle[4]={0};
+	bool skeletonIdle[4]={0};
 
 	for(int i=0;i<4;i++)
 	{
@@ -333,7 +333,7 @@ int main()
 		}
 
 		for(int i=0;i<4;i++){
-			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height);
+			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle);
 		
 		}
 
@@ -764,7 +764,7 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	
 }
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height)
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[])
 {
 	//cout<<i<<endl;
 	static int currentSkeleton=0;
@@ -798,6 +798,14 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 
+	
+
+
+
+
+
+
+	if(!skeletonIdle[i])
 	if(!skeletonMovingLeft[i]){
 		
 		
@@ -830,6 +838,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	}
 
+
 	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
 
 
@@ -840,18 +849,20 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 			PlayerSprite.setPosition(player_y,player_x);
 
 		}
-
+	if(!skeletonIdle[i])
 	skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
 	
-	
-	if(!skeletonMovingLeft[i]){
-		skeletonSp[i].setScale(-2,2);
-		skeletonSp[i].setOrigin(32,0);
-	}
-	else {
-		skeletonSp[i].setScale(2,2);
-		skeletonSp[i].setOrigin(0,0);	
-	}
+	if(!skeletonIdle[i])
+		{
+			if(!skeletonMovingLeft[i]){
+				skeletonSp[i].setScale(-2,2);
+				skeletonSp[i].setOrigin(32,0);
+			}
+			else {
+				skeletonSp[i].setScale(2,2);
+				skeletonSp[i].setOrigin(0,0);	
+			}
+		}
 		//ensuer enouh frames have passed for random movement change again
 
 
@@ -867,35 +878,48 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 	if(!posChangeHappened)
-	if(rand()%100<3){ //this entire code block is so dumb it makes me want to quit coding
-		// cout<<true;
-		// int temp;
-		// cin>>temp;
+			if(rand()%100<8){ //this entire code block is so dumb it makes me want to quit coding
+						// cout<<true;
+						// int temp;
+						// cin>>temp;
 
-		skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
-		cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
-		currentSkeleton++;
-		posChangeHappened=1;
-		FramePosForChange=FrameCount;
-		currentSkeleton=currentSkeleton>3?0:currentSkeleton;
-		//clamp to zero and 3
+			
+					skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
+					cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
+					currentSkeleton++;
+					posChangeHappened=1;
+					FramePosForChange=FrameCount;
+					currentSkeleton=currentSkeleton>3?0:currentSkeleton;
+					//clamp to zero and 3
 
 
 
 
-		// if((rand()*(1+i))%2==0){
-		// 	cout<<"moving left zero for skeleton "<<i<<endl;
-		// 	posChangeHappened=1;
-		// 	FramePosForChange=FrameCount;
-		// 	skeletonMovingLeft[i]=0;
+						// if((rand()*(1+i))%2==0){
+						// 	cout<<"moving left zero for skeleton "<<i<<endl;
+						// 	posChangeHappened=1;
+						// 	FramePosForChange=FrameCount;
+						// 	skeletonMovingLeft[i]=0;
 
-		// }else{
-		// 	cout<<"moving left one for skeleton "<<i<<endl;
-		// 	skeletonMovingLeft[i]=1;
-		// 	posChangeHappened=1;
-		// 	FramePosForChange=FrameCount;
-		// }
-	}
+						// }else{
+						// 	cout<<"moving left one for skeleton "<<i<<endl;
+						// 	skeletonMovingLeft[i]=1;
+						// 	posChangeHappened=1;
+						// 	FramePosForChange=FrameCount;
+						// }
+					
+
+
+			}else
+				{
+					cout<<"\nSkeleton "<<i<<" is Idle\n";
+					skeletonIdle[i]=1;
+					skeletonSp[i].setTextureRect(IntRect(59,0,32,110));
+					
+				}	
+
+
+		
 
 	if(FrameCount%120==0)
 		Frame+=33;
