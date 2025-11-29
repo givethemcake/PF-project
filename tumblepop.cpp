@@ -3,7 +3,7 @@
 //todo add skeletons 
 //we could maybe move the placement of enemies inside the level fucntions will probably make it easier l8r to do stuff
 
-
+//todo add skeleton randomness
 
 #include <iostream>
 #include <fstream>
@@ -97,15 +97,15 @@ int main()
 
 	//defining the skeletons
 
-	Sprite skeletonSp[8];
+	Sprite skeletonSp[4];
 	Texture skeletonTx;
 	skeletonTx.loadFromFile("Data/skeleton.png");
 	
-	int skeleton_y[8];
-	int skeleton_x[8];
+	int skeleton_y[4];
+	int skeleton_x[4];
 	bool skeletonMovingLeft[8];
 
-	for(int i=0;i<8;i++)
+	for(int i=0;i<4;i++)
 	{
 
 		skeleton_x[i]=150;
@@ -128,14 +128,14 @@ int main()
 		skeleton_x[2]=11*64;
 		skeleton_y[2]=6*64;
 
-		skeleton_x[4]=10*64;
+	/*	skeleton_x[4]=10*64;
 		skeleton_y[4]=10*64;
 
 		skeleton_x[6]=16*64;
 		skeleton_y[6]=8*64;
+	*/
 
-
-	for(int i=0;i<8;i++){
+	for(int i=0;i<4;i++){
 
 
 		skeleton_y[i]-=45;
@@ -203,7 +203,7 @@ int main()
 
 	blockTexture.loadFromFile("Data/block1.png");
 	blockSprite.setTexture(blockTexture);
-	blockSprite.setTextureRect(IntRect(0,0,64,64));
+	
 
 	//Music initialisation
 	Music lvlMusic;
@@ -329,7 +329,11 @@ int main()
 		for(int i=0;i<8;i++)
 		{ //move five ghosts
 			ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height);
+		}
+
+		for(int i=0;i<4;i++){
 			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height);
+		
 		}
 
 
@@ -405,7 +409,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 			GhostMovingLeft[i]=1;
 		}
 		else
-			if(grid_x_Ghost+1<width-2 ){
+			if(grid_x_Ghost+1<width-1 ){
 				Ghost_x[i]+=1;
 			
 			}else
@@ -486,11 +490,11 @@ void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY,
 
 
 		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
-			player_y-=1;
+			player_y-=2;
 		}else 
 			if(lvl[top_y][mid_x]=='#'){
 
-					player_y+=1;
+					player_y+=2;
 
 
 			}else
@@ -761,25 +765,30 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 
 void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height)
 {
-
+	//cout<<i<<endl;
+	static int currentSkeleton=0;
+	static bool posChangeHappened=0;
+	static int FramePosForChange;
 	static int Frame=5;	
 	static int FrameCount=0;
 	int grid_x_skeleton=skeleton_x[i]/64;
 	int grid_y_skeleton=(skeleton_y[i]+45)/64;
+	if((skeleton_y[i]+45)<height)
+	 grid_y_skeleton=(skeleton_y[i]+45)/64;
 	
 	
-/*
-	if(rand()%10==3){
-			
-			//if(grid_y_skeleton+cell_size/2<height-2)
-			{
-				cout<<"true";
-				skeleton_y[i]+=cell_size/2;
-				grid_y_skeleton=(skeleton_y[i]+45)/64;
-			}	
 
-		}
-*/	
+	// if(rand()%10==3){
+			
+	// 		if(grid_y_skeleton+cell_size/2<height-5)
+	// 		{
+	// 			cout<<"true";
+	// 			skeleton_y[i]+=cell_size/2;
+	// 			grid_y_skeleton=(skeleton_y[i]+45)/64;
+	// 		}	
+
+	// 	}
+	
 
 
 
@@ -795,7 +804,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 			skeletonMovingLeft[i]=1;
 		}
 		else
-			if(grid_x_skeleton+1<width-2 ){
+			if(grid_x_skeleton+1<width-1 ){
 				skeleton_x[i]+=1;
 			
 			}else
@@ -833,11 +842,52 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	//skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
 
+	
+
+		//ensuer enouh frames have passed for random movement change again
 
 
-	if(FrameCount%120==0)
-		Frame+=40;
+	if(FrameCount-FramePosForChange==600ull)
+	{
+		cout<<FrameCount-FramePosForChange;
+		posChangeHappened=0;
+	}
 
+
+
+
+
+
+	if(!posChangeHappened)
+	if(rand()%100<3){ //this entire code block is so dumb it makes me want to quit coding
+		// cout<<true;
+		// int temp;
+		// cin>>temp;
+
+		skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
+		cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
+		currentSkeleton++;
+		posChangeHappened=1;
+		FramePosForChange=FrameCount;
+		currentSkeleton=currentSkeleton>3?0:currentSkeleton;
+		//clamp to zero and 3
+
+
+
+
+		// if((rand()*(1+i))%2==0){
+		// 	cout<<"moving left zero for skeleton "<<i<<endl;
+		// 	posChangeHappened=1;
+		// 	FramePosForChange=FrameCount;
+		// 	skeletonMovingLeft[i]=0;
+
+		// }else{
+		// 	cout<<"moving left one for skeleton "<<i<<endl;
+		// 	skeletonMovingLeft[i]=1;
+		// 	posChangeHappened=1;
+		// 	FramePosForChange=FrameCount;
+		// }
+	}
 
 
 	
