@@ -61,15 +61,17 @@ int main()
 
 	for(int i=0;i<8;i++)
 	{
-
+	
 		Ghost_x[i]=150;
 		Ghost_y[i]=(i+1)*64;
 		GhostSp[i].setTexture(GhostTx);
 		GhostSp[i].setTextureRect(IntRect(5,5,32,32));	
 		int temp=rand();
-		if(temp%2==0)
+		
+		if(temp%2==0){
+		
 			GhostMovingLeft[i]=0;
-		else
+		}else
 			GhostMovingLeft[i]=1;
 
 
@@ -201,6 +203,7 @@ int main()
 
 	blockTexture.loadFromFile("Data/block1.png");
 	blockSprite.setTexture(blockTexture);
+	blockSprite.setTextureRect(IntRect(0,0,64,64));
 
 	//Music initialisation
 	Music lvlMusic;
@@ -527,6 +530,9 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 
 
 
+
+			//calculating 2 places above and below player directly to ensure no ghosting 
+
 			if((static_cast<int>(player_y-cell_size)/cell_size)-2>-1){
 				top_mid_up1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)-1][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
 				top_mid_up2=lvl[(static_cast<int>((player_y-cell_size)/cell_size)-2)][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
@@ -758,10 +764,27 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	static int Frame=5;	
 	static int FrameCount=0;
-	
-	
 	int grid_x_skeleton=skeleton_x[i]/64;
 	int grid_y_skeleton=(skeleton_y[i]+45)/64;
+	
+	
+/*
+	if(rand()%10==3){
+			
+			//if(grid_y_skeleton+cell_size/2<height-2)
+			{
+				cout<<"true";
+				skeleton_y[i]+=cell_size/2;
+				grid_y_skeleton=(skeleton_y[i]+45)/64;
+			}	
+
+		}
+*/	
+
+
+
+	
+	
 
 
 
