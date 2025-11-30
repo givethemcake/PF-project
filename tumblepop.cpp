@@ -106,7 +106,7 @@ int main()
 
 
 	//defining the skeletons
-
+	int skelettonCount=4;
 	Sprite skeletonSp[4];
 	Texture skeletonTx;
 	skeletonTx.loadFromFile("Data/skeleton.png");
@@ -370,9 +370,8 @@ int main()
 		//movement( player_x,velocityY, isJumping, velocityX,PlayerTexture,PlayerSprite, onGround, jumpStrength, speed, friction, counter, terminal_Velocity_x);
 			
 		playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
-
 		check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
-
+		vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
 
 
 		//presing escape to close
@@ -698,20 +697,20 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				}
 				
 				
-	if (Keyboard::isKeyPressed(Keyboard::W)){
-		vacuum_y = -1; //aims up (array going up)
-		vacuum_x = 0;
-	} else if (Keyboard::isKeyPressed(Keyboard::S)){
-		vacuum_y = 1; //aims down
-		vacuum_x = 0;
-	} else if (Keyboard::isKeyPressed(Keyboard::A)){
-		vacuum_y = 0; //aims left
-		vacuum_x = -1;
-	} else if (Keyboard::isKeyPressed(Keyboard::D)){
-		vacuum_y = 0; //aims right
-		vacuum_x = 1;
-	}				
-				
+			if (Keyboard::isKeyPressed(Keyboard::W)){
+				vacuum_y = -1; //aims up (array going up)
+				vacuum_x = 0;
+			} else if (Keyboard::isKeyPressed(Keyboard::S)){
+				vacuum_y = 1; //aims down
+				vacuum_x = 0;
+			} else if (Keyboard::isKeyPressed(Keyboard::A)){
+				vacuum_y = 0; //aims left
+				vacuum_x = -1;
+			} else if (Keyboard::isKeyPressed(Keyboard::D)){
+				vacuum_y = 0; //aims right
+				vacuum_x = 1;
+			}				
+						
 				
 				
 
@@ -859,41 +858,41 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 {
 	//cout<<i<<endl;
 	static int currentSkeleton=0;
-	static bool posChangeHappened=0;
-	static int FramePosForChange;
+	static bool posChangeHappened[4]={0};
+	static int FramePosForChange[4]={0};
 	static int Frame=192;	
 	static int FrameCount=0;
 	int grid_x_skeleton=skeleton_x[i]/64;
 	int grid_y_skeleton=(skeleton_y[i]+45)/64;
 	if((skeleton_y[i]+45)<height)
 	 grid_y_skeleton=(skeleton_y[i]+45)/64;
+
 	
+	static int currentIdleFrame[4]={0};
+	int IdleFramepos[3]={59,111,149};
 	
 
-	// if(rand()%10==3){
+	if(skeletonIdle[i]){
+	
+	
+		if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
+			currentIdleFrame[i]++;
 			
-	// 		if(grid_y_skeleton+cell_size/2<height-5)
-	// 		{
-	// 			cout<<"true";
-	// 			skeleton_y[i]+=cell_size/2;
-	// 			grid_y_skeleton=(skeleton_y[i]+45)/64;
-	// 		}	
+		}
+		
 
-	// 	}
-	
+		//currentIdleFrame[i]=(currentIdleFrame[i]>2?0:currentIdleFrame[i]);
 
+		if(currentIdleFrame[i]>2)
+		{
+					skeletonIdle[i]=0;
+					currentIdleFrame[i]=0;
 
-
-	
-	
-
-
-
-	
-
-
-
-
+		}
+		else
+			skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+		
+	}
 
 
 	if(!skeletonIdle[i])
@@ -957,10 +956,10 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 		//ensuer enouh frames have passed for random movement change again
 
 
-	if(FrameCount-FramePosForChange==600ull)
+	if(FrameCount-FramePosForChange[i]==1200ull)
 	{
-		cout<<FrameCount-FramePosForChange;
-		posChangeHappened=0;
+		cout<<FrameCount-FramePosForChange[i];
+		posChangeHappened[i]=0;
 	}
 
 
@@ -968,8 +967,11 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 
-	if(!posChangeHappened)
-			if(rand()%100<8){ //this entire code block is so dumb it makes me want to quit coding
+	if(!posChangeHappened[i])
+		{
+				int check=rand()%100;
+	
+			if(check<30){ //this entire code block is so dumb it makes me want to quit coding
 						// cout<<true;
 						// int temp;
 						// cin>>temp;
@@ -978,37 +980,22 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 					skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
 					cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
 					currentSkeleton++;
-					posChangeHappened=1;
-					FramePosForChange=FrameCount;
+					posChangeHappened[i]=1;
+					FramePosForChange[i]=FrameCount;
 					currentSkeleton=currentSkeleton>3?0:currentSkeleton;
 					//clamp to zero and 3
-
-
-
-
-						// if((rand()*(1+i))%2==0){
-						// 	cout<<"moving left zero for skeleton "<<i<<endl;
-						// 	posChangeHappened=1;
-						// 	FramePosForChange=FrameCount;
-						// 	skeletonMovingLeft[i]=0;
-
-						// }else{
-						// 	cout<<"moving left one for skeleton "<<i<<endl;
-						// 	skeletonMovingLeft[i]=1;
-						// 	posChangeHappened=1;
-						// 	FramePosForChange=FrameCount;
-						// }
-					
-
-
-			}else
+			}else if(!skeletonIdle[i] && (FrameCount+i*150)%600<10)
 				{
+					currentIdleFrame[i]=0;
 					cout<<"\nSkeleton "<<i<<" is Idle\n";
 					skeletonIdle[i]=1;
-					skeletonSp[i].setTextureRect(IntRect(59,0,32,110));
+					skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+					currentIdleFrame[i]=0;
+					FramePosForChange[i]=Frame;
 					
 				}	
-
+	
+	}
 
 		
 
