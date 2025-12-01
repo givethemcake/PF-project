@@ -1,9 +1,15 @@
 
 
-//todo add skeletons 
-//we could maybe move the placement of enemies inside the level fucntions will probably make it easier l8r to do stuff
+//todo add skeleton jumping
+//we could maybe move the placement of enemies inside the level fucntions will probably make it easier l8r to do stuff 
+//this would require a complete change of all game systems not do able in current time 
+//todo add win condition for level one
 
-//todo add skeleton randomness
+
+
+
+//To Aazan when an enemy is captured decrease their count by one plz
+
 
 #include <iostream>
 #include <fstream>
@@ -30,19 +36,19 @@ int screen_y = 1000;
 
 
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap);
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives);
 
 void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height);
 
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, const float& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height, int& vacuum_x, int& vacuum_y);// handle all ingame movement and collision and gun direction aim
 
-void level_one(char**lvl, int height,int width);
+void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width);
 
-void level_two(char**lvl,int hegiht,int width);
+void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width);
 
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[]);
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives);
 
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
@@ -53,171 +59,43 @@ void invisiblaManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 int main()
 {
 
+	
+	
+	
+	
+	
+	
+	
+	
+	static bool FirstRun=1;
+	static int lives=3;
+	static int score=0;
+	bool ShowStart=1;
+
+
 
 	//set up random number seed
 	srand(time(0));
+
+
+	
 
 
 
 
 
 	//Ghost Prototype
-
-	Sprite GhostSp[8];
-	Texture GhostTx;
-	GhostTx.loadFromFile("Data/Ghost.png");
-	
-	int Ghost_y[8];
-	int Ghost_x[8];
-	bool GhostMovingLeft[8];
-	bool GhostBeingPulled[8] = {0};
-
-	for(int i=0;i<8;i++)
-	{
-	
-		Ghost_x[i]=150;
-		Ghost_y[i]=(i+1)*64;
-		GhostSp[i].setTexture(GhostTx);
-		GhostSp[i].setTextureRect(IntRect(5,5,32,32));	
-		int temp=rand();
-		
-		if(temp%2==0){
-		
-			GhostMovingLeft[i]=0;
-		}else
-			GhostMovingLeft[i]=1;
-
-
-		//setting the ghost 1 3 5 7
-		GhostSp[i].setPosition(Ghost_y[i],Ghost_x[i]);
-		GhostSp[i].setScale(2,2);
-	}	
-		Ghost_x[0]=16*64;
-		Ghost_y[0]=4*64;
-		
-		Ghost_x[2]=11*64;
-		Ghost_y[2]=6*64;
-
-		Ghost_x[4]=10*64;
-		Ghost_y[4]=10*64;
-
-		Ghost_x[6]=16*64;
-		Ghost_y[6]=8*64;
-
-
-
-
-
+		//moved to levels
 	//defining the skeletons
+		//moved to levels 
 	
-	Sprite skeletonSp[4];
-	Texture skeletonTx;
-	skeletonTx.loadFromFile("Data/skeleton.png");
-	
-
-
-	bool skeletonJumping[4]={0};
-	float skeleton_yVelocity[4]={0};
-	int skeleton_y[4];
-	int skeleton_x[4];
-	bool skeletonMovingLeft[4];
-	bool skeletonIdle[4]={0};
-
-	for(int i=0;i<4;i++)
-	{
-
-		skeleton_x[i]=150;
-		skeleton_y[i]=(i+1)*64;
-		skeletonSp[i].setTexture(skeletonTx);
-		skeletonSp[i].setTextureRect(IntRect(8,0,32,110));
-		int temp=rand();
-		if(temp%2==0)
-			skeletonMovingLeft[i]=0;
-		else
-			skeletonMovingLeft[i]=1;
-
-
-		//setting the skeleton 1 3 5 7
-		
-	}	
-		skeleton_x[0]=16*64;
-		skeleton_y[0]=(4*64);
-		
-		skeleton_x[2]=11*64;
-		skeleton_y[2]=6*64;
-
-	/*	skeleton_x[4]=10*64;
-		skeleton_y[4]=10*64;
-
-		skeleton_x[6]=16*64;
-		skeleton_y[6]=8*64;
-	*/
-
-	for(int i=0;i<4;i++){
-
-
-		skeleton_y[i]-=45;
-		skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
-		skeletonSp[i].setScale(2,2);
-
-	}
 
 
 
 
 
 //invisibleMan Prototype
- Sprite invisibleManSp[4];
-	Texture invisibleManTx;
-	invisibleManTx.loadFromFile("Data/invisibleMan.png");
-	
-
-
-	bool invisibleManJumping[4]={0};
-	float invisibleMan_yVelocity[4]={0};
-	int invisibleMan_y[4];
-	int invisibleMan_x[4];
-	bool invisibleManMovingLeft[4];
-	bool invisibleManIdle[4]={0};
-
-	for(int i=0;i<4;i++)
-	{
-
-		invisibleMan_x[i]=150;
-		invisibleMan_y[i]=(i+1)*64;
-		invisibleManSp[i].setTexture(invisibleManTx);
-		invisibleManSp[i].setTextureRect(IntRect(8,0,32,110));
-		int temp=rand();
-		if(temp%2==0)
-			invisibleManMovingLeft[i]=0;
-		else
-			invisibleManMovingLeft[i]=1;
-
-
-		//setting the invisibleMan 1 3 5 7
-		
-	}	
-		invisibleMan_x[0]=16*64;
-		invisibleMan_y[0]=(4*64);
-		
-		invisibleMan_x[2]=11*64;
-		invisibleMan_y[2]=6*64;
-
-	/*	invisibleMan_x[4]=10*64;
-		invisibleMan_y[4]=10*64;
-
-		invisibleMan_x[6]=16*64;
-		invisibleMan_y[6]=8*64;
-	*/
-
-	for(int i=0;i<4;i++){
-
-
-		invisibleMan_y[i]-=15;
-		invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
-		invisibleManSp[i].setScale(2,2);
-
-	}
+ 	
 
 
 	
@@ -253,6 +131,13 @@ int main()
 	window.setVerticalSyncEnabled(true);
 	window.setFramerateLimit(60);
 
+
+
+	
+	
+
+
+
 	//level specifics
 	int level=1;
 	const int cell_size = 64;
@@ -260,6 +145,22 @@ int main()
 	const int width = 18;
 	char** lvl;
 	
+
+
+
+
+	
+	
+	
+	
+
+
+
+
+
+
+
+
 	//gun specifics
 	int maxcap = 3;
 	int vacuum_range = 200;
@@ -276,6 +177,8 @@ int main()
 	Texture blockTexture;
 	Sprite blockSprite;
 
+
+	
 	bgTex.loadFromFile("Data/bg.png");
 	bgSprite.setTexture(bgTex);
 	bgSprite.setPosition(0,0);
@@ -373,12 +276,7 @@ int main()
 	//lvl[7][7] = '#';
 	//lvl[7][8] = '#';
 	//lvl[7][9] = '#';
-	level=1;
 
-	if(level==1)
-		level_one(lvl,height,width);
-	else if(level==2)
-		level_two(lvl,height,width);
 
 	Event ev;
 	//main loop
@@ -389,10 +287,61 @@ int main()
 	
 	while (window.isOpen())
 	{
+				Sprite startSprite;
+				Texture startTex;
+		
+			
+	
+			if(ShowStart)//Show the start screen at the start of each game
+			{
+				
+			
+				startTex.loadFromFile("Data/startScreen.png");
+				startSprite.setTexture(startTex);
+				startSprite.setPosition(0,0);
+
+
+				float scaleX = (width * cell_size) / (float)startTex.getSize().x;
+				float scaleY = (height * cell_size) / (float)startTex.getSize().y;
+				startSprite.setScale(scaleX, scaleY);
+
+				window.draw(startSprite);
+				window.display();
+				
+			
+			}
+		
+		
+		
+		
+		if(lives<=0)//lives check 
+			{
+
+				cout<<"game over"<<endl;
+				break;
+
+			}
+
 		counter++;
 		while (window.pollEvent(ev))
 		{
 				
+			if(ev.type == Event::Resized)
+				{ //resize the start screen if the user resizes the window
+					
+					if(ShowStart){
+					startTex.loadFromFile("Data/startScreen.png");
+					startSprite.setTexture(startTex);
+					startSprite.setPosition(0,0);
+
+					float scaleX = ev.size.width / (float)startTex.getSize().x;
+					float scaleY = ev.size.height / (float)startTex.getSize().y;
+					startSprite.setScale(scaleX, scaleY);
+					window.draw(startSprite);
+					window.display();
+					}
+
+				}
 			
 			if (ev.type == Event::Closed) 
 			{
@@ -409,21 +358,23 @@ int main()
 		}
 
 
+		if(ShowStart){
 
-
-
-
-
-		for(int i=0;i<8;i++)
-		{ //move five ghosts
-	        ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height,GhostBeingPulled,captured_enemies_index,captured_count,PlayerWidth,vacuum_x,vacuum_y,maxcap);
+			if(Keyboard::isKeyPressed(Keyboard::Space)){
+				ShowStart=0;
+				
 			}
+			continue;
 
-		for(int i=0;i<4;i++){
-			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle);
-	//		invisiblaManMove(invisibleMan_x,invisibleMan_y, width, invisibleManSp,invisibleManMovingLeft,i,player_x,player_y,lvl,PlayerSprite, cell_size, PlayerHeight,height, invisibleManIdle);
+		}	//if the user presses the space key dont show start
+
+
+
+
+
 		
-		}
+
+	
 
 
 
@@ -437,9 +388,9 @@ int main()
 
 		//movement( player_x,velocityY, isJumping, velocityX,PlayerTexture,PlayerSprite, onGround, jumpStrength, speed, friction, counter, terminal_Velocity_x);
 			
-		playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
-		check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
-		vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
+		// playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
+		// check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
+		// vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
 
 
 		//presing escape to close
@@ -454,15 +405,20 @@ int main()
 		player_gravity(lvl,offset_y,velocityY,onGround,gravity,terminal_Velocity, player_x, player_y, cell_size, PlayerHeight, PlayerWidth);
 		PlayerSprite.setPosition(player_x, player_y);
 		window.draw(PlayerSprite);
+		
+		
+		
+		level=2;
+		if(level==1){
+			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
+		}else
+			level_two(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
 
 
-
-		for(int i=0;i<8;i++){
-			window.draw(GhostSp[i]);
-			window.draw(skeletonSp[i]);
-			//window.draw(invisibleManSp[i]);
-		}
+		
 		window.display();
+
+		FirstRun=0;
 	}
 
 	//stopping music and deleting level array
@@ -479,7 +435,7 @@ int main()
 
 
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives)
 {
 
 	static int Frame=5;	
@@ -595,6 +551,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
 			PlayerSprite.setPosition(player_y,player_x);
+			lives--;
 
 		}
 
@@ -820,8 +777,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 }
 
 
-void level_one(char**lvl, int height,int width)
-{
+void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range,     int vacuum_width){
 
 	//declare the border
 
@@ -861,10 +817,178 @@ void level_one(char**lvl, int height,int width)
 		}
 	}
 
+
+	const int skeletonCount=4;
+	const int GhostCount=8;
+	static Sprite GhostSp[GhostCount];
+	static Texture GhostTx;
+	GhostTx.loadFromFile("Data/Ghost.png");
+	
+	static int Ghost_y[GhostCount];
+	static int Ghost_x[GhostCount];
+	static bool GhostMovingLeft[GhostCount];
+	static bool GhostBeingPulled[GhostCount] = {0};
+
+
+	static Sprite skeletonSp[skeletonCount];
+	static Texture skeletonTx;
+	if(FirstRun)
+	skeletonTx.loadFromFile("Data/skeleton.png");
+	
+
+
+	static bool skeletonJumping[skeletonCount]={0};
+	static float skeleton_yVelocity[skeletonCount]={0};
+	static int skeleton_y[skeletonCount];
+	static int skeleton_x[skeletonCount];
+	static bool skeletonMovingLeft[skeletonCount];
+	static bool skeletonIdle[skeletonCount]={0};
+
+
+
+
+
+	if(FirstRun){
+		for(int i=0;i<GhostCount;i++)
+		{
+		
+			Ghost_x[i]=150;
+			Ghost_y[i]=(i+1)*64;
+			GhostSp[i].setTexture(GhostTx);
+			GhostSp[i].setTextureRect(IntRect(5,5,32,32));	
+			int temp=rand();
+			
+			if(temp%2==0){
+			
+				GhostMovingLeft[i]=0;
+			}else
+				GhostMovingLeft[i]=1;
+
+
+			//setting the ghost 1 3 5 7
+			GhostSp[i].setPosition(Ghost_y[i],Ghost_x[i]);
+			GhostSp[i].setScale(2,2);
+		}	
+			Ghost_x[0]=16*64;
+			Ghost_y[0]=4*64;
+			
+			Ghost_x[2]=11*64;
+			Ghost_y[2]=6*64;
+
+			Ghost_x[4]=10*64;
+			Ghost_y[4]=10*64;
+
+			Ghost_x[6]=16*64;
+			Ghost_y[6]=8*64;
+
+
+				
+		for(int i=0;i<skeletonCount;i++)
+		{
+
+			skeleton_x[i]=150;
+			skeleton_y[i]=(i+1)*64;
+			skeletonSp[i].setTexture(skeletonTx);
+			skeletonSp[i].setTextureRect(IntRect(8,0,32,110));
+			int temp=rand();
+			if(temp%2==0)
+				skeletonMovingLeft[i]=0;
+			else
+				skeletonMovingLeft[i]=1;
+
+
+			//setting the skeleton 1 3 5 7
+			
+		}	
+			skeleton_x[0]=16*64;
+			skeleton_y[0]=(4*64);
+			
+			skeleton_x[2]=11*64;
+			skeleton_y[2]=6*64;
+
+		/*	skeleton_x[4]=10*64;
+			skeleton_y[4]=10*64;
+
+			skeleton_x[6]=16*64;
+			skeleton_y[6]=8*64;
+		*/
+
+		for(int i=0;i<skeletonCount;i++){ //place the skeletons so that they are on top of the blocks and not below them
+
+
+			skeleton_y[i]-=45;
+			skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
+			skeletonSp[i].setScale(2,2);
+
+		}
+			
+	} //set the postions of the ghosts and skeletons for the first run
+
+
+
+
+
+
+
+
+
+	playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
+	check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
+	vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
+
+	//moving enemies
+	for(int i=0;i<GhostCount;i++){
+	  ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height,GhostBeingPulled,captured_enemies_index,captured_count,PlayerWidth,vacuum_x,vacuum_y,maxcap,lives);
+	}
+
+	for(int i=0;i<skeletonCount;i++)
+	{
+		skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle,lives);
+
+	}
+
+
+
+
+
+
+	//printing enemies to screen
+	for(int i=0;i<GhostCount;i++){
+			window.draw(GhostSp[i]);
+			
+			//window.draw(invisibleManSp[i]);
+		}
+	
+	for(int i=0;i<skeletonCount;i++)
+	{
+		window.draw(skeletonSp[i]);
+	}
+
+
+
 }
 
 
-void level_two(char **lvl,int height,int width){
+void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width){
+
+	if(FirstRun){
+
+
+
+
+
+		for(int i=0;i<width;i++)
+		{
+				for(int j=0;j<height;j++){
+					lvl[i][j]==' ';
+				}
+		} //clear array for new level
+			
+
+
+
+
+
 
 
 	for(int i=0;i<height;i++){
@@ -910,18 +1034,83 @@ void level_two(char **lvl,int height,int width){
 
 
 		}
+	}//draw level if first run
+}
+
+	const int invisibleManCount=4;
+
+	static Sprite invisibleManSp[invisibleManCount];
+	static Texture invisibleManTx;
+	
+	if(FirstRun){
+		invisibleManTx.loadFromFile("Data/invisibleMan.png");
+	}
+
+
+	static bool invisibleManJumping[invisibleManCount]={0};
+	static float invisibleMan_yVelocity[invisibleManCount]={0};
+	static int invisibleMan_y[invisibleManCount];
+	static int invisibleMan_x[invisibleManCount];
+	static bool invisibleManMovingLeft[invisibleManCount];
+	static bool invisibleManIdle[invisibleManCount]={0};
+
+
+	if(FirstRun){
+	for(int i=0;i<invisibleManCount;i++)
+	{
+
+		invisibleMan_x[i]=150;
+		invisibleMan_y[i]=(i+1)*64;
+		invisibleManSp[i].setTexture(invisibleManTx);
+		invisibleManSp[i].setTextureRect(IntRect(8,0,32,110));
+		int temp=rand();
+		if(temp%2==0)
+			invisibleManMovingLeft[i]=0;
+		else
+			invisibleManMovingLeft[i]=1;
+
+
+		//setting the invisibleMan 1 3 5 7
+		
+	}	
+		invisibleMan_x[0]=16*64;
+		invisibleMan_y[0]=(4*64);
+		
+		invisibleMan_x[2]=11*64;
+		invisibleMan_y[2]=6*64;
+
+	for(int i=0;i<invisibleManCount;i++){
+
+		invisibleMan_y[i]-=15;
+		invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
+		invisibleManSp[i].setScale(2,2);
+
+	}
+	}
+
+
+
+	playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
+	check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
+	//vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
 
 
 
 
 
-
-
+	for(int i=0;i<invisibleManCount;i++){
+		invisiblaManMove(invisibleMan_x,invisibleMan_y, width, invisibleManSp,invisibleManMovingLeft,i,player_x,player_y,lvl,PlayerSprite, cell_size, PlayerHeight,height, invisibleManIdle);
 
 	}
 
 
+	for(int i=0;i<invisibleManCount;i++){
+		window.draw(invisibleManSp[i]);
+	}
+
+
 }
+
 
 
 
@@ -993,7 +1182,7 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	
 }
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[])
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives)
 {
 	//cout<<i<<endl;
 	static int currentSkeleton=0;
@@ -1011,7 +1200,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	int IdleFramepos[3]={59,111,149};
 	
 
-	if(skeletonIdle[i]){
+	if(skeletonIdle[i]){ //if the skeleton is idle handle the animations
 	
 	
 		if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
@@ -1034,7 +1223,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	}
 
 
-	if(!skeletonIdle[i])
+	if(!skeletonIdle[i]) //if the skeleton is not idle move either left or right
 	if(!skeletonMovingLeft[i]){
 		
 		
@@ -1071,11 +1260,12 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
 
 
-	if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32))
+	if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
 		{
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
 			PlayerSprite.setPosition(player_y,player_x);
+			lives;
 
 		}
 	if(!skeletonIdle[i])
