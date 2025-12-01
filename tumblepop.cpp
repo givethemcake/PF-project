@@ -38,6 +38,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 
 void level_one(char**lvl, int height,int width);
 
+void level_two(char**lvl,int hegiht,int width);
+
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
 void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[]);
@@ -45,6 +47,8 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeight, int& vacuum_x, int& vacuum_y, int maxcap, int vacuum_range, int vacuum_width, int captured_enemies_index[], int& captured_count, int Ghost_x[], int Ghost_y[], int num_ghosts, bool GhostBeingPulled[]);
+
+void invisiblaManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[]);
 
 int main()
 {
@@ -66,7 +70,6 @@ int main()
 	int Ghost_y[8];
 	int Ghost_x[8];
 	bool GhostMovingLeft[8];
-	
 	bool GhostBeingPulled[8] = {0};
 
 	for(int i=0;i<8;i++)
@@ -106,11 +109,15 @@ int main()
 
 
 	//defining the skeletons
-	int skelettonCount=4;
+	
 	Sprite skeletonSp[4];
 	Texture skeletonTx;
 	skeletonTx.loadFromFile("Data/skeleton.png");
 	
+
+
+	bool skeletonJumping[4]={0};
+	float skeleton_yVelocity[4]={0};
 	int skeleton_y[4];
 	int skeleton_x[4];
 	bool skeletonMovingLeft[4];
@@ -157,6 +164,63 @@ int main()
 
 
 
+
+
+//invisibleMan Prototype
+ Sprite invisibleManSp[4];
+	Texture invisibleManTx;
+	invisibleManTx.loadFromFile("Data/invisibleMan.png");
+	
+
+
+	bool invisibleManJumping[4]={0};
+	float invisibleMan_yVelocity[4]={0};
+	int invisibleMan_y[4];
+	int invisibleMan_x[4];
+	bool invisibleManMovingLeft[4];
+	bool invisibleManIdle[4]={0};
+
+	for(int i=0;i<4;i++)
+	{
+
+		invisibleMan_x[i]=150;
+		invisibleMan_y[i]=(i+1)*64;
+		invisibleManSp[i].setTexture(invisibleManTx);
+		invisibleManSp[i].setTextureRect(IntRect(8,0,32,110));
+		int temp=rand();
+		if(temp%2==0)
+			invisibleManMovingLeft[i]=0;
+		else
+			invisibleManMovingLeft[i]=1;
+
+
+		//setting the invisibleMan 1 3 5 7
+		
+	}	
+		invisibleMan_x[0]=16*64;
+		invisibleMan_y[0]=(4*64);
+		
+		invisibleMan_x[2]=11*64;
+		invisibleMan_y[2]=6*64;
+
+	/*	invisibleMan_x[4]=10*64;
+		invisibleMan_y[4]=10*64;
+
+		invisibleMan_x[6]=16*64;
+		invisibleMan_y[6]=8*64;
+	*/
+
+	for(int i=0;i<4;i++){
+
+
+		invisibleMan_y[i]-=15;
+		invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
+		invisibleManSp[i].setScale(2,2);
+
+	}
+
+
+	
 
 
 
@@ -309,9 +373,12 @@ int main()
 	//lvl[7][7] = '#';
 	//lvl[7][8] = '#';
 	//lvl[7][9] = '#';
+	level=1;
 
 	if(level==1)
 		level_one(lvl,height,width);
+	else if(level==2)
+		level_two(lvl,height,width);
 
 	Event ev;
 	//main loop
@@ -349,11 +416,12 @@ int main()
 
 		for(int i=0;i<8;i++)
 		{ //move five ghosts
-	ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height,GhostBeingPulled,captured_enemies_index,captured_count,PlayerWidth,vacuum_x,vacuum_y,maxcap);
+	        ghostMove(Ghost_x,Ghost_y,width,GhostSp,GhostMovingLeft,i,player_x,player_y,lvl,PlayerSprite,cell_size,PlayerHeight,height,GhostBeingPulled,captured_enemies_index,captured_count,PlayerWidth,vacuum_x,vacuum_y,maxcap);
 			}
 
 		for(int i=0;i<4;i++){
 			skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle);
+	//		invisiblaManMove(invisibleMan_x,invisibleMan_y, width, invisibleManSp,invisibleManMovingLeft,i,player_x,player_y,lvl,PlayerSprite, cell_size, PlayerHeight,height, invisibleManIdle);
 		
 		}
 
@@ -392,6 +460,7 @@ int main()
 		for(int i=0;i<8;i++){
 			window.draw(GhostSp[i]);
 			window.draw(skeletonSp[i]);
+			//window.draw(invisibleManSp[i]);
 		}
 		window.display();
 	}
@@ -412,6 +481,7 @@ int main()
 
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)
 {
+
 	static int Frame=5;	
 	static int FrameCount=0;
 	
@@ -453,7 +523,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 		} else Ghost_y[i] = vacuum_start_y; //snaps
 		
 		//check if capture
-		if (Ghost_x[i] == vacuum_start_x && Ghost_y[i] == vacuum_start_y) {
+		if (Ghost_x[i] == (int)vacuum_start_x && Ghost_y[i] == (int)vacuum_start_y) { //int because ghost_x and ghost_y are integers, woudl alwyas be false with a decimal
 			if (captured_count < maxcap) {
 				captured_enemies_index[captured_count] = i;
 				captured_count += 1;
@@ -469,7 +539,8 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	
 	
 	
-	
+	if (Ghost_x[i]>0) //check if ghost is on screen before checking level, otherwise when ghost gets tped away on suck the game crashes
+	{
 	
 	
 	
@@ -510,13 +581,16 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 		
 
 	}
+	}
 	
 	} //end of patrol
 	
 	GhostSp[i].setPosition(Ghost_x[i],Ghost_y[i]);
 
-
-	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32))
+	if (!GhostBeingPulled[i] && Ghost_x[i]>0) //disable collision if ghost being pulled or not on screen
+	{
+	
+	if(!(player_x<Ghost_x[i]-50||player_x>Ghost_x[i]+50)&&!(player_y<Ghost_y[i]-32||player_y>Ghost_y[i]+32)) //player collision logic
 		{
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
@@ -524,7 +598,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 		}
 
-	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, staring y ,widht,height
+	GhostSp[i].setTextureRect(IntRect(Frame,0,32,64));//staring x, starting y ,widht,height
 
 
 
@@ -544,6 +618,7 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 
 }
 
+}
 
 void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY, int PlayerWidth, int PlayerHeight, int cell_size, int width, int height)
 
@@ -696,6 +771,26 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 					
 				}
 				
+
+
+				if(velocityX>terminal_Velocity_x)
+					velocityX=terminal_Velocity_x;
+				else if(velocityX<-terminal_Velocity_x)
+					velocityX=-terminal_Velocity_x;
+				 if(!Keyboard::isKeyPressed(Keyboard::Right)&&!Keyboard::isKeyPressed(Keyboard::Left))
+					velocityX*=friction;
+
+
+				player_x+=velocityX;
+
+
+
+
+
+				counter=counter>8?1:counter;
+				
+
+
 				
 			if (Keyboard::isKeyPressed(Keyboard::W)){
 				vacuum_y = -1; //aims up (array going up)
@@ -715,23 +810,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				
 
 				//clamp velocity
-				if(velocityX>terminal_Velocity_x)
-					velocityX=terminal_Velocity_x;
-				else if(velocityX<-terminal_Velocity_x)
-					velocityX=-terminal_Velocity_x;
-				 if(!Keyboard::isKeyPressed(Keyboard::D)&&!Keyboard::isKeyPressed(Keyboard::A))
-					velocityX*=friction;
-
-
-				player_x+=velocityX;
-
-
-
-
-
-				counter=counter>8?1:counter;
 				
-
 				//if(velocityX<0){
 				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
 				//}
@@ -781,6 +860,66 @@ void level_one(char**lvl, int height,int width)
 		
 		}
 	}
+
+}
+
+
+void level_two(char **lvl,int height,int width){
+
+
+	for(int i=0;i<height;i++){
+
+		for(int j=0;j<width;j++)
+
+
+
+		{
+
+
+
+			if(i==0||i==height-1||j==0||j==width-1)	// border 
+				lvl[i][j]='#';
+
+			
+			if((i==3 && (j<4||(j>6&&j<width-3)))) //row 1
+				lvl[i][j]='#';
+
+			if(i==4 && (j>2&&j<5)) //row 2 start of stair case
+				lvl[i][j]='#';
+
+			if(i==5 && ((j>3&&j<6) || j==1||(j>width-5) || (j>9&&j<width-5)   ))
+				lvl[i][j]='#';
+
+			if(i==6 && (j>4&&j<7))
+				lvl[i][j]='#';
+
+			if(i==7 && ((j>5&&j<8) || (j<3) || (j<width-3&&j>=width-7) ))
+				lvl[i][j]='#';
+
+			if(i==8 && ((j>6&&j<9)))
+				lvl[i][j]='#';
+			
+			if(i==9 && ((j>7&&j<10) || (j<5) || (j>width-6)))
+				lvl[i][j]='#';
+			
+			if(i==10 && ((j>8&&j<11)))
+				lvl[i][j]='#';
+			if(i==11 && ( j>9&&j<13 || (j<7) ))
+				lvl[i][j]='#';
+
+
+
+		}
+
+
+
+
+
+
+
+
+	}
+
 
 }
 
@@ -1054,11 +1193,16 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 		beam_width = vacuum_range;
 	}
 	
+	int ghost_size = 64; //to make the gun collision check the whole box sprite rectangle of the ghost
+	
 	//enemy capture
 	if (Keyboard::isKeyPressed(Keyboard::Space) && captured_count < maxcap) { //if holding space and not at capacity
 		for (int i = 0; i < num_ghosts; i++) {
 			if (Ghost_x[i] > 0 && !GhostBeingPulled[i]) { //if ghost in game on screen and not already being pullled
-				if (Ghost_x[i] > beam_start && Ghost_x[i] < beam_start + beam_length && Ghost_y[i] > beam_top && Ghost_y[i] < beam_top + beam_width) { //if ghost inside beam
+				bool collisionX = Ghost_x[i] + ghost_size > beam_start && Ghost_x[i] < beam_start + beam_length; //collision with rectangle of ghost 
+				bool collisionY = Ghost_y[i] + ghost_size > beam_top && Ghost_y[i] < beam_top + beam_width; //rectangle of ghost 
+				
+				if (collisionX && collisionY) {
 					GhostBeingPulled[i] = true;
 					break;
 				}
@@ -1067,3 +1211,161 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 	}
 }
 	
+void invisiblaManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[])
+{
+	//cout<<i<<endl;
+	static int currentinvisibleMan=0;
+	static bool posChangeHappened[4]={0};
+	static int FramePosForChange[4]={0};
+	static int Frame=192;	
+	static int FrameCount=0;
+	int grid_x_invisibleMan=invisibleMan_x[i]/64;
+	int grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
+	if((invisibleMan_y[i]+45)<height)
+	 grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
+
+	
+	static int currentIdleFrame[4]={0};
+	int IdleFramepos[3]={59,111,149};
+	
+
+	if(invisibleManIdle[i]){
+	
+	
+		if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
+			currentIdleFrame[i]++;
+			
+		}
+		
+
+		//currentIdleFrame[i]=(currentIdleFrame[i]>2?0:currentIdleFrame[i]);
+
+		if(currentIdleFrame[i]>2)
+		{
+					invisibleManIdle[i]=0;
+					currentIdleFrame[i]=0;
+
+		}
+		else
+			invisibleManSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+		
+	}
+
+
+	if(!invisibleManIdle[i])
+	if(!invisibleManMovingLeft[i]){
+		
+		
+		if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan+1]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan+1]=='#'){
+			invisibleManMovingLeft[i]=1;
+		}
+		else
+			if(grid_x_invisibleMan+1<width-1 ){
+				invisibleMan_x[i]+=1;
+			
+			}else
+				invisibleManMovingLeft[i]=1;
+		
+	
+	}
+	else
+	{
+	if(invisibleManMovingLeft[i])
+
+		if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+			invisibleManMovingLeft[i]=0;
+		}
+		else
+			if(grid_x_invisibleMan-1>=0 )
+			invisibleMan_x[i]-=1;
+			else	
+			invisibleManMovingLeft[i]=0;
+		
+		
+
+	}
+
+
+	invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
+
+
+	if(!(player_x<invisibleMan_x[i]-50||player_x>invisibleMan_x[i]+50)&&!(player_y<invisibleMan_y[i]-32||player_y>invisibleMan_y[i]+32))
+		{
+			player_x=cell_size;
+			player_y=(height-2)*cell_size-PlayerHeight;
+			PlayerSprite.setPosition(player_y,player_x);
+
+		}
+	if(!invisibleManIdle[i])
+	invisibleManSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
+	
+	if(!invisibleManIdle[i])
+		{
+			if(!invisibleManMovingLeft[i]){
+				invisibleManSp[i].setScale(-2,2);
+				invisibleManSp[i].setOrigin(32,0);
+			}
+			else {
+				invisibleManSp[i].setScale(2,2);
+				invisibleManSp[i].setOrigin(0,0);	
+			}
+		}
+		//ensuer enouh frames have passed for random movement change again
+
+
+	if(FrameCount-FramePosForChange[i]==1200ull)
+	{
+		cout<<FrameCount-FramePosForChange[i];
+		posChangeHappened[i]=0;
+	}
+
+
+
+
+
+
+	if(!posChangeHappened[i])
+		{
+				int check=rand()%100;
+	
+			if(check<30){ //this entire code block is so dumb it makes me want to quit coding
+						// cout<<true;
+						// int temp;
+						// cin>>temp;
+
+			
+					invisibleManMovingLeft[currentinvisibleMan]=!invisibleManMovingLeft[currentinvisibleMan];
+					cout<<"change for invisibleMan "<<currentinvisibleMan<<"at frame "<<FrameCount<<endl;
+					currentinvisibleMan++;
+					posChangeHappened[i]=1;
+					FramePosForChange[i]=FrameCount;
+					currentinvisibleMan=currentinvisibleMan>3?0:currentinvisibleMan;
+					//clamp to zero and 3
+			}else if(!invisibleManIdle[i] && (FrameCount+i*150)%600<10)
+				{
+					currentIdleFrame[i]=0;
+					cout<<"\ninvisibleMan "<<i<<" is Idle\n";
+					invisibleManIdle[i]=1;
+					invisibleManSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+					currentIdleFrame[i]=0;
+					FramePosForChange[i]=Frame;
+					
+				}	
+	
+	}
+
+		
+
+	if(FrameCount%120==0)
+		Frame+=33;
+
+	
+	if(Frame>300)
+		Frame=192;
+
+
+	FrameCount++;
+	return;//end of func
+
+
+}
