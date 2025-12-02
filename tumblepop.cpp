@@ -48,7 +48,7 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives);
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[]);	                                   
 
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
@@ -408,7 +408,7 @@ int main()
 		
 		
 		
-		level=2;
+		level=1;
 		if(level==1){
 			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
 		}else
@@ -828,7 +828,9 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	static int Ghost_x[GhostCount];
 	static bool GhostMovingLeft[GhostCount];
 	static bool GhostBeingPulled[GhostCount] = {0};
-
+	static int currentSkeleton=0;
+	static bool posChangeHappened[skeletonCount]={0};
+	static int FramePosForChange[skeletonCount]={0};
 
 	static Sprite skeletonSp[skeletonCount];
 	static Texture skeletonTx;
@@ -943,7 +945,10 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	for(int i=0;i<skeletonCount;i++)
 	{
-		skeletonMove( skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle,lives);
+ skeletonMove(skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle, lives,  skeletonCount,  currentSkeleton,  posChangeHappened, FramePosForChange, FirstRun,skeletonJumping);                                    
+
+
+
 
 	}
 
@@ -1037,7 +1042,10 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	}//draw level if first run
 }
 
-	const int invisibleManCount=4;
+	const int invisibleManCount=3;
+	const int GhostCount=4;
+	const int skeletonCount=9;
+
 
 	static Sprite invisibleManSp[invisibleManCount];
 	static Texture invisibleManTx;
@@ -1114,6 +1122,10 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 
 
+
+
+
+
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size)
 {
 	window.draw(bgSprite);
@@ -1132,6 +1144,10 @@ void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSpr
 	}
 
 }
+
+
+
+
 
 
 
@@ -1182,12 +1198,10 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	
 }
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives)
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[])                                    
 {
 	//cout<<i<<endl;
-	static int currentSkeleton=0;
-	static bool posChangeHappened[4]={0};
-	static int FramePosForChange[4]={0};
+	
 	static int Frame=192;	
 	static int FrameCount=0;
 	int grid_x_skeleton=skeleton_x[i]/64;
@@ -1195,10 +1209,69 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	if((skeleton_y[i]+45)<height)
 	 grid_y_skeleton=(skeleton_y[i]+45)/64;
 
+
 	
-	static int currentIdleFrame[4]={0};
+	static int currentIdleFrame[3]={0};
 	int IdleFramepos[3]={59,111,149};
 	
+
+
+
+	// if(skeletonJumping[i])
+	// {
+
+	// 	if(rand()%2)
+	// 	{
+	// 		//jumping up
+
+	// 		for(int height=grid_y_skeleton;height>grid_y_skeleton-5&&height>0;height--) //check 5 rows above dont check above index 1
+	// 		{
+	// 			for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+	// 				{
+	// 					if(lvl[height][row]=='#'){
+	// 						cout<<height<<endl<<row<<endl;
+	// 						skeleton_x[i]=row*cell_size;
+	// 						skeleton_y[i]=(cell_size+height)*cell_size;
+	// 						break;
+	// 					}
+					
+	// 				}
+	// 		}
+
+	// 	}
+		
+	// 	else{
+
+	// 		//jumping down
+	// 		for(int height=grid_y_skeleton;height>grid_y_skeleton-5  && height>0;   height--) //check 5 rows above dont check above index 1
+	// 		{
+	// 			for(int row=grid_x_skeleton-2;(row<grid_x_skeleton+2) && row>1 && row<width-3 ;row++) //check 5 cols above 2 on each side on above
+	// 				{
+	// 					if(lvl[height][row]=='#'){
+	// 						cout<<height<<endl<<row<<endl;
+	// 						skeleton_x[i]=row*cell_size;
+	// 						skeleton_y[i]=(cell_size+height)*cell_size;
+	// 						break;
+
+	// 					}
+					
+					
+	// 				}
+	// 		}
+
+	// 	}
+
+	// 	skeletonJumping[i]=0;
+	// }
+
+
+
+
+
+
+
+
+
 
 	if(skeletonIdle[i]){ //if the skeleton is idle handle the animations
 	
@@ -1224,37 +1297,49 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 	if(!skeletonIdle[i]) //if the skeleton is not idle move either left or right
-	if(!skeletonMovingLeft[i]){
-		
-		
-		if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
-			skeletonMovingLeft[i]=1;
-		}
-		else
-			if(grid_x_skeleton+1<width-1 ){
-				skeleton_x[i]+=1;
+			if(!skeletonMovingLeft[i]){
+				
+				
+				if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
+					skeletonMovingLeft[i]=1;
+					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#' ){ 
+						//if the skeleton changes direction because it reached an edge
+							skeletonJumping[i]=1;
+						}
+				}
+				else
+					if(grid_x_skeleton+1<width-1 ){
+						skeleton_x[i]+=1;
+						
+					
+					}else{
+						skeletonMovingLeft[i]=1;
+
+					}
 			
-			}else
-				skeletonMovingLeft[i]=1;
-		
+			}
+			else
+			
+			if(skeletonMovingLeft[i])
+
+				if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+					skeletonMovingLeft[i]=0;
+
+					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton]!='#' ){ 
+						//if the skeleton changes direction because it reached an edge
+							skeletonJumping[i]=1;
+						}
+				}
+				
+				else
+					if(grid_x_skeleton-1>=0 )
+					skeleton_x[i]-=1;
+					else	
+					skeletonMovingLeft[i]=0;
+				
+				
+
 	
-	}
-	else
-	{
-	if(skeletonMovingLeft[i])
-
-		if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
-			skeletonMovingLeft[i]=0;
-		}
-		else
-			if(grid_x_skeleton-1>=0 )
-			skeleton_x[i]-=1;
-			else	
-			skeletonMovingLeft[i]=0;
-		
-		
-
-	}
 
 
 	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
@@ -1296,16 +1381,14 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 
-	if(!posChangeHappened[i])
+	if(!posChangeHappened[i]&&!skeletonJumping[i])
 		{
 				int check=rand()%100;
 	
-			if(check<30){ //this entire code block is so dumb it makes me want to quit coding
-						// cout<<true;
-						// int temp;
-						// cin>>temp;
+			if(check<30){ 
+						
 
-			
+						//change direcation
 					skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
 					cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
 					currentSkeleton++;
@@ -1315,6 +1398,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 					//clamp to zero and 3
 			}else if(!skeletonIdle[i] && (FrameCount+i*150)%600<10)
 				{
+					//turn idle
 					currentIdleFrame[i]=0;
 					cout<<"\nSkeleton "<<i<<" is Idle\n";
 					skeletonIdle[i]=1;
