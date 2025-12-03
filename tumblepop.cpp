@@ -1,8 +1,7 @@
 
 
-//todo add skeleton jumping
-//we could maybe move the placement of enemies inside the level fucntions will probably make it easier l8r to do stuff 
-//this would require a complete change of all game systems not do able in current time 
+
+
 //todo add win condition for level one
 
 
@@ -48,13 +47,13 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap);	                                   
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap);	                                   
 
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeight, int& vacuum_x, int& vacuum_y, int maxcap, int vacuum_range, int vacuum_width, int captured_enemies_index[], int& captured_count, int Ghost_x[], int Ghost_y[], int num_ghosts, bool GhostBeingPulled[]);
 
-void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[]);
+void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap);
 
 int main()
 {
@@ -846,6 +845,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	static int skeleton_x[skeletonCount];
 	static bool skeletonMovingLeft[skeletonCount];
 	static bool skeletonIdle[skeletonCount]={0};
+	static int jumpCoolDown[skeletonCount]={0};
 
 
 
@@ -947,7 +947,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	for(int i=0;i<skeletonCount;i++)
 	{
- skeletonMove(skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle, lives,  skeletonCount,  currentSkeleton,  posChangeHappened, FramePosForChange, FirstRun,skeletonJumping, SkeletonBeingPulled,captured_enemies_index, captured_count, PlayerWidth,vacuum_x, vacuum_y, maxcap);
+ skeletonMove(skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle, lives,  skeletonCount,  currentSkeleton,  posChangeHappened, FramePosForChange, FirstRun,skeletonJumping,jumpCoolDown, SkeletonBeingPulled,captured_enemies_index, captured_count, PlayerWidth,vacuum_x, vacuum_y, maxcap);
 
 
 
@@ -1044,27 +1044,28 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	}//draw level if first run
 }
 
-	const int invisibleManCount=3; //these 3 were declared as constants, cant decrement them then
+	
 	const int GhostCount=4;
 	const int skeletonCount=9;
+	const int invisibleManCount=3;
 
+	static bool posChangeHappened[invisibleManCount]={0};
+	static int FramePosForChange[invisibleManCount]={0};
 
 	static Sprite invisibleManSp[invisibleManCount];
 	static Texture invisibleManTx;
+	if(FirstRun)
+	invisibleManTx.loadFromFile("Data/invisibleMan.png");
 	
-	if(FirstRun){
-		invisibleManTx.loadFromFile("Data/invisibleMan.png");
-	}
-
-
+	int currentInvibleMan=1;
+	static bool invisbleManBeingPulled[invisibleManCount] = {0};
 	static bool invisibleManJumping[invisibleManCount]={0};
 	static float invisibleMan_yVelocity[invisibleManCount]={0};
 	static int invisibleMan_y[invisibleManCount];
 	static int invisibleMan_x[invisibleManCount];
 	static bool invisibleManMovingLeft[invisibleManCount];
 	static bool invisibleManIdle[invisibleManCount]={0};
-
-
+	static int jumpCoolDown[invisibleManCount]={0};
 	if(FirstRun){
 	for(int i=0;i<invisibleManCount;i++)
 	{
@@ -1109,8 +1110,7 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 
 	for(int i=0;i<invisibleManCount;i++){
-		invisibleManMove(invisibleMan_x,invisibleMan_y, width, invisibleManSp,invisibleManMovingLeft,i,player_x,player_y,lvl,PlayerSprite, cell_size, PlayerHeight,height, invisibleManIdle);
-
+	 invisibleManMove( invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size,PlayerHeight, height, invisibleManIdle, lives, invisibleManCount,  currentInvibleMan,  posChangeHappened,  FramePosForChange, FirstRun, invisibleManJumping, jumpCoolDown, invisbleManBeingPulled,  captured_enemies_index,  captured_count,  PlayerWidth,  vacuum_x,  vacuum_y,  maxcap);                                    
 	}
 
 
@@ -1200,9 +1200,10 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	
 }
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)                                    
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)                                    
 {
 	static int Frame=192;	 //has to be at start or scope errors l8r
+	static bool jumpingUp=0;
 	static int FrameCount=0;
 	int grid_x_skeleton=skeleton_x[i]/64;
 	int grid_y_skeleton=(skeleton_y[i]+45)/64;
@@ -1278,52 +1279,59 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 
 
-	// if(skeletonJumping[i])
-	// {
+	if(skeletonJumping[i] && jumpCoolDown[i]==0)
+	{
 
-	// 	if(rand()%2)
-	// 	{
-	// 		//jumping up
+		if(jumpingUp)
+		{
+			//jumping up
 
-	// 		for(int height=grid_y_skeleton;height>grid_y_skeleton-5&&height>0;height--) //check 5 rows above dont check above index 1
-	// 		{
-	// 			for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
-	// 				{
-	// 					if(lvl[height][row]=='#'){
-	// 						cout<<height<<endl<<row<<endl;
-	// 						skeleton_x[i]=row*cell_size;
-	// 						skeleton_y[i]=(cell_size+height)*cell_size;
-	// 						break;
-	// 					}
+			for(int skelheight=grid_y_skeleton-1;skelheight>grid_y_skeleton-5&&skelheight>0 && skeletonJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
+			{
+				for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+					{
+						if(lvl[skelheight][row]=='#'){
+							cout<<skelheight<<endl<<row<<endl;
+							skeleton_x[i]=row*cell_size;
+							skeleton_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+							cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
+							// int temp;
+							// cin>>temp;
+							skeletonJumping[i]=0;
+							break;
+						}
 					
-	// 				}
-	// 		}
+					}
+			}
 
-	// 	}
+		}
 		
-	// 	else{
+		else{
 
-	// 		//jumping down
-	// 		for(int height=grid_y_skeleton;height>grid_y_skeleton-5  && height>0;   height--) //check 5 rows above dont check above index 1
-	// 		{
-	// 			for(int row=grid_x_skeleton-2;(row<grid_x_skeleton+2) && row>1 && row<width-3 ;row++) //check 5 cols above 2 on each side on above
-	// 				{
-	// 					if(lvl[height][row]=='#'){
-	// 						cout<<height<<endl<<row<<endl;
-	// 						skeleton_x[i]=row*cell_size;
-	// 						skeleton_y[i]=(cell_size+height)*cell_size;
-	// 						break;
+			//jumping down
+			cout<<"jumped donwn"<<endl;
 
-	// 					}
+			for(int skelheight=grid_y_skeleton+1;skelheight<grid_y_skeleton+5&&skelheight<height-1 && skeletonJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
+			{
+				for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+					{
+						if(lvl[skelheight][row]=='#'){
+							cout<<skelheight<<endl<<row<<endl;
+							skeleton_x[i]=row*cell_size;
+							skeleton_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+							cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
+							// int temp;
+							// cin>>temp;
+							skeletonJumping[i]=0;
+							break;
+						}
 					
-					
-	// 				}
-	// 		}
+					}
+			}
 
-	// 	}
-
-	// 	skeletonJumping[i]=0;
-	// }
+	 	
+	}
+}
 
 
 
@@ -1363,9 +1371,14 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 				
 				if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
 					skeletonMovingLeft[i]=1;
-					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#' ){ 
+					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#' &&  skeletonJumping[i]==0 && jumpCoolDown){ 
 						//if the skeleton changes direction because it reached an edge
 							skeletonJumping[i]=1;
+							jumpCoolDown[i]=600;
+							if(rand()%100>50)
+								jumpingUp=1;
+							else	
+								jumpingUp=0;
 						}
 				}
 				else
@@ -1386,9 +1399,15 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 				if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
 					skeletonMovingLeft[i]=0;
 
-					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton]!='#' ){ 
+					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton]!='#' && skeletonJumping[i]==0 && jumpCoolDown==0){ 
 						//if the skeleton changes direction because it reached an edge
 							skeletonJumping[i]=1;
+							jumpCoolDown[i]=600;
+							if(rand()%100>50)
+								jumpingUp=1;
+							else 
+								jumpingUp=0;
+
 						}
 				}
 				
@@ -1472,6 +1491,9 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	}
 
 		
+	jumpCoolDown[i]-=1;
+	jumpCoolDown[i]=jumpCoolDown[i]<0?0:jumpCoolDown[i];
+
 
 	if(FrameCount%120==0)
 		Frame+=33;
@@ -1546,25 +1568,149 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 	}
 }
 	
-void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[])
+void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)                                    
 {
-	//cout<<i<<endl;
-	static int currentinvisibleMan=0;
-	static bool posChangeHappened[4]={0};
-	static int FramePosForChange[4]={0};
-	static int Frame=192;	
+	static int Frame=192;	 //has to be at start or scope errors l8r
+	static bool jumpingUp=0;
 	static int FrameCount=0;
 	int grid_x_invisibleMan=invisibleMan_x[i]/64;
 	int grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
 	if((invisibleMan_y[i]+45)<height)
-	 grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
-
-	
-	static int currentIdleFrame[4]={0};
+	grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
+	static int currentIdleFrame[3]={0};
 	int IdleFramepos[3]={59,111,149};
 	
+	
+	
+	
+	//cout<<i<<endl;
+	
+	
+	
+	
+	
+	float vacuum_start_x, vacuum_start_y; //same pulling system as ghost
+	if (vacuum_x == 1) { //aiming right
+	vacuum_start_x = player_x + PlayerWidth; //far right of player png
+	} else if (vacuum_x == -1) { //aiming left
+	vacuum_start_x = player_x; //far left of player sprite
+	} else vacuum_start_x = player_x + PlayerWidth/2; //if aiming up or down, use horizontal center
+	
+	if (vacuum_y == -1) { //aiming up
+	vacuum_start_y = player_y; //top edge
+	} else if (vacuum_y == 1) { //aiming down
+	vacuum_start_y = player_y + PlayerHeight;
+	} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
+	
+	const float pullspeed = 3;
+	if (invisibleManBeingPulled[i]) {
+		
+		if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+			invisibleManBeingPulled[i] = false; //stops pulling if let go of space
+			return;
+		}
+		
+		float dx = vacuum_start_x - invisibleMan_x[i]; //horizontal distance
+		float dy = vacuum_start_y - invisibleMan_y[i]; //vertical distance
+		if (dx > pullspeed) { //target to the left
+			invisibleMan_x[i] += pullspeed;
+		} else if (dx < -pullspeed) { //target to the right
+			invisibleMan_x[i] -= pullspeed;
+		} else invisibleMan_x[i] = vacuum_start_x; //snaps the target to the vacuum to prevent it moving past
+		
+		if (dy > pullspeed) { //target is up
+			invisibleMan_y[i] += pullspeed;
+		} else if (dy < -pullspeed) { //target is down
+			invisibleMan_y[i] -= pullspeed;
+		} else invisibleMan_y[i] = vacuum_start_y; //snaps
+		
+		//check if capture
+		if (invisibleMan_x[i] == (int)vacuum_start_x && invisibleMan_y[i] == (int)vacuum_start_y) { //int because ghost_x and ghost_y are integers, woudl alwyas be false with a decimal
+			if (captured_count < maxcap) {
+				captured_enemies_index[captured_count] = i;
+				captured_count += 1;
+				
+				//reset pull and move ghost off camera
+				invisibleManBeingPulled[i] = false;
+				invisibleMan_x[i] = -1000;
+				invisibleMan_y[i] = -1000;
+				}
+			}
+		} 
+	else { //if not being pulled, normal patrol
+	
+	if (invisibleMan_x[i] > 0) { //only runs if on screen
+	
+	
 
-	if(invisibleManIdle[i]){
+
+
+
+
+	if(invisibleManJumping[i] && jumpCoolDown[i]==0)
+	{
+
+		if(jumpingUp)
+		{
+			//jumping up
+
+			for(int skelheight=grid_y_invisibleMan-1;skelheight>grid_y_invisibleMan-5&&skelheight>0 && invisibleManJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
+			{
+				for(int row=grid_x_invisibleMan-2;row<grid_x_invisibleMan+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+					{
+						if(lvl[skelheight][row]=='#'){
+							cout<<skelheight<<endl<<row<<endl;
+							invisibleMan_x[i]=row*cell_size;
+							invisibleMan_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+							cout<<"invisibleMan jumped to "<<invisibleMan_x[i]<<" and "<<invisibleMan_y[i];
+							// int temp;
+							// cin>>temp;
+							invisibleManJumping[i]=0;
+							break;
+						}
+					
+					}
+			}
+
+		}
+		
+		else{
+
+			//jumping down
+			cout<<"jumped donwn"<<endl;
+
+			for(int skelheight=grid_y_invisibleMan+1;skelheight<grid_y_invisibleMan+5&&skelheight<height-1 && invisibleManJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
+			{
+				for(int row=grid_x_invisibleMan-2;row<grid_x_invisibleMan+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+					{
+						if(lvl[skelheight][row]=='#'){
+							cout<<skelheight<<endl<<row<<endl;
+							invisibleMan_x[i]=row*cell_size;
+							invisibleMan_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+							cout<<"invisibleMan jumped to "<<invisibleMan_x[i]<<" and "<<invisibleMan_y[i];
+							// int temp;
+							// cin>>temp;
+							invisibleManJumping[i]=0;
+							break;
+						}
+					
+					}
+			}
+
+	 	
+	}
+}
+
+
+
+
+
+
+
+
+
+
+	if(invisibleManIdle[i]){ //if the invisibleMan is idle handle the animations
 	
 	
 		if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
@@ -1587,48 +1733,72 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	}
 
 
-	if(!invisibleManIdle[i])
-	if(!invisibleManMovingLeft[i]){
-		
-		
-		if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan+1]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan+1]=='#'){
-			invisibleManMovingLeft[i]=1;
-		}
-		else
-			if(grid_x_invisibleMan+1<width-1 ){
-				invisibleMan_x[i]+=1;
+	if(!invisibleManIdle[i]) //if the invisibleMan is not idle move either left or right
+			if(!invisibleManMovingLeft[i]){
+				
+				
+				if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan+1]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan+1]=='#'){
+					invisibleManMovingLeft[i]=1;
+					if((rand()%100)>60 && lvl[grid_y_invisibleMan+1][grid_x_invisibleMan+1]!='#' &&  invisibleManJumping[i]==0 && jumpCoolDown){ 
+						//if the invisibleMan changes direction because it reached an edge
+							invisibleManJumping[i]=1;
+							jumpCoolDown[i]=600;
+							if(rand()%100>50)
+								jumpingUp=1;
+							else	
+								jumpingUp=0;
+						}
+				}
+				else
+					if(grid_x_invisibleMan+1<width-1 ){
+						invisibleMan_x[i]+=1;
+						
+					
+					}else{
+						invisibleManMovingLeft[i]=1;
+
+					}
 			
-			}else
-				invisibleManMovingLeft[i]=1;
-		
-	
+			}
+			else
+			
+			if(invisibleManMovingLeft[i])
+
+				if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+					invisibleManMovingLeft[i]=0;
+
+					if((rand()%100)>60 && lvl[grid_y_invisibleMan+1][grid_x_invisibleMan]!='#' && invisibleManJumping[i]==0 && jumpCoolDown==0){ 
+						//if the invisibleMan changes direction because it reached an edge
+							invisibleManJumping[i]=1;
+							jumpCoolDown[i]=600;
+							if(rand()%100>50)
+								jumpingUp=1;
+							else 
+								jumpingUp=0;
+
+						}
+				}
+				
+				else
+					if(grid_x_invisibleMan-1>=0 )
+					invisibleMan_x[i]-=1;
+					else	
+					invisibleManMovingLeft[i]=0;
+				
+				
 	}
-	else
-	{
-	if(invisibleManMovingLeft[i])
-
-		if(lvl[grid_y_invisibleMan+1][grid_x_invisibleMan]!='#'||lvl[grid_y_invisibleMan][grid_x_invisibleMan]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
-			invisibleManMovingLeft[i]=0;
-		}
-		else
-			if(grid_x_invisibleMan-1>=0 )
-			invisibleMan_x[i]-=1;
-			else	
-			invisibleManMovingLeft[i]=0;
-		
-		
-
 	}
 
 
 	invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
 
 
-	if(!(player_x<invisibleMan_x[i]-50||player_x>invisibleMan_x[i]+50)&&!(player_y<invisibleMan_y[i]-32||player_y>invisibleMan_y[i]+32))
+	if(!(player_x<invisibleMan_x[i]-50||player_x>invisibleMan_x[i]+50)&&!(player_y<invisibleMan_y[i]-32||player_y>invisibleMan_y[i]+32)) //invisibleMan player collision check
 		{
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
 			PlayerSprite.setPosition(player_y,player_x);
+			lives;
 
 		}
 	if(!invisibleManIdle[i])
@@ -1659,16 +1829,14 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 
 
-	if(!posChangeHappened[i])
+	if(!posChangeHappened[i]&&!invisibleManJumping[i])
 		{
 				int check=rand()%100;
 	
-			if(check<30){ //this entire code block is so dumb it makes me want to quit coding
-						// cout<<true;
-						// int temp;
-						// cin>>temp;
+			if(check<30){ 
+						
 
-			
+						//change direcation
 					invisibleManMovingLeft[currentinvisibleMan]=!invisibleManMovingLeft[currentinvisibleMan];
 					cout<<"change for invisibleMan "<<currentinvisibleMan<<"at frame "<<FrameCount<<endl;
 					currentinvisibleMan++;
@@ -1678,6 +1846,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 					//clamp to zero and 3
 			}else if(!invisibleManIdle[i] && (FrameCount+i*150)%600<10)
 				{
+					//turn idle
 					currentIdleFrame[i]=0;
 					cout<<"\ninvisibleMan "<<i<<" is Idle\n";
 					invisibleManIdle[i]=1;
@@ -1690,6 +1859,9 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	}
 
 		
+	jumpCoolDown[i]-=1;
+	jumpCoolDown[i]=jumpCoolDown[i]<0?0:jumpCoolDown[i];
+
 
 	if(FrameCount%120==0)
 		Frame+=33;
