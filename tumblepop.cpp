@@ -1,5 +1,5 @@
 
-
+//current plan for shooting - captured_enemies_index[i] for number of enemy (like ghost 1 or 2 or 3...), new array captured_enemies_type[i], need like a Last in First out structure so just use these two arrays ez
 
 
 //todo add win condition for level one
@@ -1424,7 +1424,9 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
 
-
+	if (!SkeletonBeingPulled[i] && skeleton_x[i] > 0) //only check collision if skelly not being pulled and on screen
+	{
+	
 	if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
 		{
 			player_x=cell_size;
@@ -1433,6 +1435,8 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 			lives;
 
 		}
+	}
+	
 	if(!skeletonIdle[i])
 	skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
 	
