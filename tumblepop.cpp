@@ -29,11 +29,7 @@ int screen_x = 1152;
 int screen_y = 1000;
 
 
-
-
-
-
-
+void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun);// to reload the furrent level 
 
 
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives);
@@ -71,7 +67,7 @@ int main()
 	static int lives=3;
 	static int score=0;
 	bool ShowStart=1;
-
+	bool pause=0;
 
 
 	//set up random number seed
@@ -213,7 +209,7 @@ int main()
 	float friction=0.8;
 	float acceleration=1;
 
-	const float jumpStrength = 19; // Initial jump velocity
+	const float jumpStrength = 20; // Initial jump velocity
 	const float gravity = 1;  // Gravity acceleration
 
 	bool isJumping = false;  // Track if jumping
@@ -289,13 +285,24 @@ int main()
 	{
 				Sprite startSprite;
 				Texture startTex;
-		
-			
 	
+				
+	Event event;
+			while(window.pollEvent(event)) {
+    		if(event.type == Event::KeyPressed) {
+        		if(event.key.code == Keyboard::P)
+            		pause = !pause;		
+    			}
+			}
+			if(pause) {
+			continue; //pause the game
+			}			
+			
+
+			
+				
 			if(ShowStart)//Show the start screen at the start of each game
 			{
-				
-			
 				startTex.loadFromFile("Data/startScreen.png");
 				startSprite.setTexture(startTex);
 				startSprite.setPosition(0,0);
@@ -325,7 +332,6 @@ int main()
 		counter++;
 		while (window.pollEvent(ev))
 		{
-				
 			if(ev.type == Event::Resized)
 				{ //resize the start screen if the user resizes the window
 					
@@ -366,13 +372,9 @@ int main()
 			}
 			continue;
 
-		}	//if the user presses the space key dont show start
+		}	//if the user presses the space key dont show start	
 
-
-
-
-
-		
+			
 
 	
 
@@ -410,10 +412,17 @@ int main()
 		
 		level=1;
 		if(level==1){
+			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
+			reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);
+
 			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
 		}else
-			level_two(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
+		if(level==2){
+			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
+			{reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);}
 
+			level_two(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
+		}
 
 		
 		window.display();
@@ -602,7 +611,8 @@ void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY,
 
 		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
 			player_y-=2;
-		}else 
+		}
+		else 
 			if(lvl[top_y][mid_x]=='#'){
 
 					player_y+=2;
@@ -780,8 +790,6 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range,     int vacuum_width){
 
 	//declare the border
-
-
 	for(int i=0;i<height;i++){
 		for(int j=0;j<width;j++){
 
@@ -835,6 +843,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	static Sprite skeletonSp[skeletonCount];
 	static Texture skeletonTx;
+
 	if(FirstRun)
 	skeletonTx.loadFromFile("Data/skeleton.png");
 	
@@ -850,8 +859,16 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 
 
-
+		if(Keyboard::isKeyPressed(Keyboard::L)) // reload level
+	{
+		player_x=cell_size;
+		player_y=(height-2)*cell_size-PlayerHeight;
+		PlayerSprite.setPosition(player_x,player_y);
+		FirstRun=1;
+		return;
+	}
 	if(FirstRun){
+		lives=3;// resetting lives at level start, metioned in rubrics
 		for(int i=0;i<GhostCount;i++)
 		{
 		
@@ -979,7 +996,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width){
 
 	if(FirstRun){
-
+		lives=3;//resetting lives at level start
 
 
 
@@ -1173,9 +1190,6 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	}
 	else
 	{
-
-
-
 
 		if(!(player_y+velocityY<cell_size))
 		player_y = offset_y;
@@ -1703,4 +1717,13 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	return;//end of func
 
 
+}
+
+void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun)
+{
+	player_x=cell_size;
+	player_y=(height-2)*cell_size-PlayerHeight;
+	PlayerSprite.setPosition(player_x,player_y);
+	FirstRun=1;
+	return;
 }
