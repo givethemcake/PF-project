@@ -1211,6 +1211,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	grid_y_skeleton=(skeleton_y[i]+45)/64;
 	static int currentIdleFrame[3]={0};
 	int IdleFramepos[3]={59,111,149};
+	static int Jumping_x=0,Jumping_y=0;
 	
 	
 	
@@ -1286,9 +1287,9 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 		{
 			//jumping up
 
-			for(int skelheight=grid_y_skeleton-1;skelheight>grid_y_skeleton-5&&skelheight>0 && skeletonJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
+			for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0 && skeletonJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
 			{
-				for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
 					{
 						if(lvl[skelheight][row]=='#'){
 							cout<<skelheight<<endl<<row<<endl;
@@ -1309,14 +1310,17 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 		else{
 
 			//jumping down
-			cout<<"jumped donwn"<<endl;
+			// cout<<"jumped donwn"<<endl;
 
-			for(int skelheight=grid_y_skeleton+1;skelheight<grid_y_skeleton+5&&skelheight<height-1 && skeletonJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
+			for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1 && skeletonJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
 			{
-				for(int row=grid_x_skeleton-2;row<grid_x_skeleton+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
 					{
 						if(lvl[skelheight][row]=='#'){
 							cout<<skelheight<<endl<<row<<endl;
+							// cout<<"Valid Spot found";
+							// int temp;
+							// cin>>temp;
 							skeleton_x[i]=row*cell_size;
 							skeleton_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
 							cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
@@ -1325,6 +1329,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 							skeletonJumping[i]=0;
 							break;
 						}
+				
 					
 					}
 			}
@@ -1375,6 +1380,8 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 						//if the skeleton changes direction because it reached an edge
 							skeletonJumping[i]=1;
 							jumpCoolDown[i]=600;
+							Jumping_x=grid_x_skeleton;
+							Jumping_y=grid_y_skeleton;
 							if(rand()%100>50)
 								jumpingUp=1;
 							else	
@@ -1403,6 +1410,8 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 						//if the skeleton changes direction because it reached an edge
 							skeletonJumping[i]=1;
 							jumpCoolDown[i]=600;
+							Jumping_x=grid_x_skeleton;
+							Jumping_y=grid_y_skeleton;
 							if(rand()%100>50)
 								jumpingUp=1;
 							else 
@@ -1424,20 +1433,17 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
 
-	if (!SkeletonBeingPulled[i] && skeleton_x[i] > 0) //only check collision if skelly not being pulled and on screen
-	{
-	
-	if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
+	if(!SkeletonBeingPulled)//dont kill player if being sucked
+		if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
 		{
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
 			PlayerSprite.setPosition(player_y,player_x);
-			lives;
+			lives--;
 
 		}
-	}
 	
-	if(!skeletonIdle[i])
+		if(!skeletonIdle[i])
 	skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
 	
 	if(!skeletonIdle[i])
