@@ -33,7 +33,7 @@ int screen_y = 1000;
 void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun);// to reload the current level 
 
 //starting work on power ups
-void powerUp(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun, int& lives, int& speed,int& vacuum_width,int& vacuum_range);
+
 
 
 
@@ -85,20 +85,6 @@ int main()
 
 	//set up random number seed
 	srand(time(0));
-
-
-	
-
-
-
-
-
-	//Ghost Prototype
-		//moved to levels
-	//defining the skeletons
-		//moved to levels 
-	
-
 
 
 
@@ -2234,25 +2220,68 @@ void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_siz
 }
 
 
+//power up functions
 
-void powerUp(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun, int& lives,float& speed,int& vacuum_width,int& vacuum_range, int& vacuum_y)
-{	// should be removed if player dies
-	 // condition if enemy defeat by a three enemy ball
-	int power =rand()%2;
-	if(power==0)// life boost
-		lives++;
-	else if(power==1)// double speed boost
-		speed*=2;
-	else if(power==2)// 
-		{
-			vacuum_range+=50;
-		}
-	else if(power==3)
-		{
-			vacuum_width+=10;
-			vacuum_y-=	5;// to balance the vacuum baem withrespect to its center	
-		}
-	return;
+bool power_deploy(int enemy_x, int enemy_y,int& power_x, int &power_y,int width , int height, int& power_select)// to assign to powerplaced
+{
+	if(enemy_x < width && enemy_x>0 && enemy_y>0 && enemy_y<height)//
+	{
+		power_x=enemy_x;
+		power_y=enemy_y;
+		power_select=rand()%4;
+		return true;
+	}
+	else return false;
+
 }
 
+void power_display(int power_x, int power_y, Texture& texpower, Sprite& power,int power_select )
+{
+	switch (power_select)
+	{
+	case 0:
+		// speed sprite
+		break;
+	case 1:
+		// life sprite
+		break;
+	case 2:
+		// radius sprite
+		break;
+	case 3:
+		// range sprite
+		break;
+	default:
+		break;
+	}
+}
 
+bool pick_up(int power_x, int power_y, int player_x, int player_y, int playerWidth, int playerHeight,bool powerPlaced)// to be assigned to power on
+{
+	if(power_x < player_x+playerWidth && power_x+64 > player_x && player_y+playerHeight > power_y && power_y+64>player_x)// colision detected
+		{
+			powerPlaced=0;// to remove power sprite from game
+			return 1;// for power 
+		}
+	else return 0;// power on 
+}	
+void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width )
+{
+	switch (power_select)
+	{
+	case 0:
+		speed*=2;
+		break;
+	case 1:
+		lives++;
+		break;
+	case 2:
+		vacuum_range+=50;
+		break;
+	case 3:
+		vacuum_width+=10;
+		break;
+	default:
+		break;
+	}
+}
