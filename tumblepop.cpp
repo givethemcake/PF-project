@@ -28,6 +28,8 @@ int screen_x = 1152;
 int screen_y = 1000;
 
 
+
+
 void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun);// to reload the current level 
 
 //starting work on power ups
@@ -55,6 +57,8 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 
 void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap);
 
+void DynamTest();
+
 int main()
 {
 
@@ -71,6 +75,7 @@ int main()
 	static int score=0;
 	bool ShowStart=1;
 	bool pause=0;
+
 
 
 	//set up random number seed
@@ -212,7 +217,7 @@ int main()
 	float friction=0.8;
 	float acceleration=1;
 
-	const float jumpStrength = 20; // Initial jump velocity
+	const float jumpStrength = 19; // Initial jump velocity
 	const float gravity = 1;  // Gravity acceleration
 
 	bool isJumping = false;  // Track if jumping
@@ -255,9 +260,10 @@ int main()
 	char top_mid_up = '\0';
 	char top_left_up = '\0';
 
-	PlayerTexture.loadFromFile("Data/player_left.png");
+	PlayerTexture.loadFromFile("Data/player.png");
 	PlayerSprite.setTexture(PlayerTexture);
-	PlayerSprite.setScale(3,3);
+	PlayerSprite.setTextureRect(IntRect(15,41,32,40));
+	PlayerSprite.setScale(2.5,2.5);
 	player_x=cell_size;
 	player_y=(height-2)*cell_size-PlayerHeight;
 	PlayerSprite.setPosition(player_x, player_y);
@@ -287,10 +293,7 @@ int main()
 	while (window.isOpen())
 	{
 				Sprite startSprite;
-				Texture startTex;
-	
-				
-	Event event;
+				Texture startTex;Event event;
 			while(window.pollEvent(event)) {
     		if(event.type == Event::KeyPressed) {
         		if(event.key.code == Keyboard::P)
@@ -300,12 +303,13 @@ int main()
 			if(pause) {
 			continue; //pause the game
 			}			
+		
 			
-
-			
-				
+	
 			if(ShowStart)//Show the start screen at the start of each game
 			{
+				
+			
 				startTex.loadFromFile("Data/startScreen.png");
 				startSprite.setTexture(startTex);
 				startSprite.setPosition(0,0);
@@ -335,6 +339,7 @@ int main()
 		counter++;
 		while (window.pollEvent(ev))
 		{
+				
 			if(ev.type == Event::Resized)
 				{ //resize the start screen if the user resizes the window
 					
@@ -375,9 +380,13 @@ int main()
 			}
 			continue;
 
-		}	//if the user presses the space key dont show start	
+		}	//if the user presses the space key dont show start
 
-			
+
+
+
+
+		
 
 	
 
@@ -415,12 +424,13 @@ int main()
 		
 		level=2;
 		if(level==1){
+			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
 			reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);
 
 			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
 		}else
-		if(level==2){
+			if(level==2){
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
 			{reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);}
 
@@ -647,6 +657,13 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 
 
 
+	static int frameCount=0;
+	static int frame=219;
+	int starting_Y_frame=41;
+	int Framewidth=33;
+	int Frameheight=40;
+	
+	
 	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
     	
 		int top_mid_up1;		
@@ -675,6 +692,9 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				
 			}
 
+
+
+
 			if((static_cast<int>(player_y-cell_size)/cell_size)+3<height){
 				bottom_mid1=lvl[(static_cast<int>(player_y-cell_size)/cell_size)+3][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
 				botttom_mid2=lvl[(static_cast<int>(player_y-cell_size)/cell_size)+2][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
@@ -685,7 +705,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 			if((Keyboard::isKeyPressed(Keyboard::Up))&&onGround==true){// sometimes gets stuck in the ceilling doesenst always apply downward push
 
 					if(!((top_mid_up1=='#'&&top_mid_up2=='#')/*||(top_left_up1=='#'&&top_left_up2=='#')||(top_right_up1=='#'&&top_right_up2=='#')*/)){
-
+						//i dont remember what this does 
 									
 							velocityY-=jumpStrength;
 							isJumping=true;
@@ -712,8 +732,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 					if(lvl[grid_y][grid_x]=='#')
 						velocityX=0;
 					else{
-					PlayerTexture.loadFromFile("Data/player_left.png");
-					PlayerSprite.setTexture(PlayerTexture);
+					//PlayerTexture.loadFromFile("Data/player_left.png");
+					//PlayerSprite.setTexture(PlayerTexture);
 						velocityX-=speed;
 					}
 					
@@ -727,8 +747,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 					if(lvl[grid_y][grid_x]=='#')
 						velocityX=0;
 					else{
-					PlayerTexture.loadFromFile("Data/player_right.png");
-					PlayerSprite.setTexture(PlayerTexture);
+					//PlayerTexture.loadFromFile("Data/player_right.png");
+					//PlayerSprite.setTexture(PlayerTexture);
 						velocityX+=speed;
 					}	
 					
@@ -781,11 +801,59 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 				
 				
 
-				//clamp velocity
+			
 				
-				//if(velocityX<0){
-				//	PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,10,frarmeWidth,frameHeight));
-				//}
+					if(velocityX<-1){
+						PlayerSprite.setTextureRect(IntRect(frame,starting_Y_frame,Framewidth,Frameheight));//starting x starting y widht height
+						PlayerSprite.setScale( 2.5,2.5);
+						PlayerSprite.setOrigin(0,0);				
+					}else
+					if(velocityX>1)
+					{
+						PlayerSprite.setTextureRect(IntRect(frame,starting_Y_frame,Framewidth,Frameheight));//starting x starting y widht height
+						PlayerSprite.setScale(-2.5,2.5);
+						PlayerSprite.setOrigin(32,0);
+						
+					}
+					else
+					{
+						if(velocityX<0) //cuz velocity is very rarely zero cuz friction can use this to estimate the direction being faced
+						{
+							
+							PlayerSprite.setTextureRect(IntRect(15,starting_Y_frame,Framewidth,Frameheight));//starting x starting y widht height
+							PlayerSprite.setScale( 2.5,2.5);
+							PlayerSprite.setOrigin(0,0);
+						}
+						else
+						{ 
+							PlayerSprite.setTextureRect(IntRect(15,starting_Y_frame,Framewidth,Frameheight));//starting x starting y widht height
+							PlayerSprite.setScale( -2.5,2.5);
+							PlayerSprite.setOrigin(32,0);
+						}
+						}
+					
+						
+				if(velocityY>1||velocityY<-1){
+					PlayerSprite.setTextureRect(IntRect(524,30,Framewidth,Frameheight));//starting x starting y widht height
+
+				}
+
+				frameCount++;
+
+		
+				if(frameCount%20==0){
+						frame+=Framewidth;
+					cout<<"OnGround is"<<onGround;
+					//cout<<"Added to player Frame";
+				}
+
+				if(frame>350)
+				{
+					//cout<<"Frame greater than 350";
+					frame=219;
+				}
+
+				
 
 				return;
 
@@ -795,6 +863,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range,     int vacuum_width){
 
 	//declare the border
+
+
 	for(int i=0;i<height;i++){
 		for(int j=0;j<width;j++){
 
@@ -848,7 +918,6 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	static Sprite skeletonSp[skeletonCount];
 	static Texture skeletonTx;
-
 	if(FirstRun)
 	skeletonTx.loadFromFile("Data/skeleton.png");
 	
@@ -865,7 +934,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 
 
-		if(Keyboard::isKeyPressed(Keyboard::L)) // reload level
+	if(Keyboard::isKeyPressed(Keyboard::L)) // reload level
 	{
 		player_x=cell_size;
 		player_y=(height-2)*cell_size-PlayerHeight;
@@ -873,8 +942,10 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 		FirstRun=1;
 		return;
 	}
-	if(FirstRun){
+	if(FirstRun){	
+			
 		lives=3;// resetting lives at level start, metioned in rubrics
+
 		for(int i=0;i<GhostCount;i++)
 		{
 		
@@ -1002,7 +1073,9 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, const float& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width){
 
 	if(FirstRun){
-		lives=3;//resetting lives at level start
+
+				lives=3;//resetting lives at level start
+
 
 
 
@@ -1081,7 +1154,7 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	invisibleManTx.loadFromFile("Data/invisibleMan.png");
 	
 	int currentInvibleMan=1;
-	static bool invisbleManBeingPulled[invisibleManCount] = {0};
+	static bool invisibleManBeingPulled[invisibleManCount] = {0};
 	static bool invisibleManJumping[invisibleManCount]={0};
 	static float invisibleMan_yVelocity[invisibleManCount]={0};
 	static int invisibleMan_y[invisibleManCount];
@@ -1126,14 +1199,14 @@ void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	playermovement( player_x, velocityY,  isJumping,  velocityX, PlayerTexture,  PlayerSprite,  onGround,jumpStrength, speed, friction,  counter,  terminal_Velocity_x, top_mid_up, PlayerWidth, cell_size, player_y, PlayerHeight,lvl, height, vacuum_x, vacuum_y);
 	check_stuck(lvl, player_x,  player_y, velocityY,  PlayerWidth, PlayerHeight,  cell_size,  width,  height);
-	vacuum_suck(player_x, player_y, PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range, vacuum_width, captured_enemies_index, captured_count, invisibleMan_x, invisibleMan_y, 4, invisbleManBeingPulled); //ran for skeleton pull, 4 skellies
+	vacuum_suck(player_x, player_y, PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range, vacuum_width, captured_enemies_index, captured_count, invisibleMan_x, invisibleMan_y, 4, invisibleManBeingPulled); //ran for skeleton pull, 4 skellies
 
 
 
 
 
 	for(int i=0;i<invisibleManCount;i++){
-	 invisibleManMove( invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size,PlayerHeight, height, invisibleManIdle, lives, invisibleManCount,  currentInvibleMan,  posChangeHappened,  FramePosForChange, FirstRun, invisibleManJumping, jumpCoolDown, invisbleManBeingPulled,  captured_enemies_index,  captured_count,  PlayerWidth,  vacuum_x,  vacuum_y,  maxcap);                                    
+	 invisibleManMove( invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size,PlayerHeight, height, invisibleManIdle, lives, invisibleManCount,  currentInvibleMan,  posChangeHappened,  FramePosForChange, FirstRun, invisibleManJumping, jumpCoolDown, invisibleManBeingPulled,  captured_enemies_index,  captured_count,  PlayerWidth,  vacuum_x,  vacuum_y,  maxcap);                                    
 	}
 
 
@@ -1188,7 +1261,7 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	char bottom_right_down = lvl[(int)(offset_y  + Pheight) / cell_size][(int)(player_x + Pwidth) / cell_size];
 	char bottom_mid_down = lvl[(int)(offset_y + Pheight) / cell_size][(int)(player_x + Pwidth / 2) / cell_size];
 
-	if (/*bottom_left_down == '#' ||*/ bottom_mid_down == '#' &&velocityY>=0/*|| bottom_right_down == '#'*/) //making falling more precise 
+	if (/*bottom_left_down == '#' ||*/ (bottom_mid_down == '#') &&velocityY>=0/*|| bottom_right_down == '#'*/) //making falling more precise 
 	{
 		onGround = true;
 		
@@ -1196,6 +1269,9 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	}
 	else
 	{
+
+
+
 
 		if(!(player_y+velocityY<cell_size))
 		player_y = offset_y;
@@ -1600,7 +1676,7 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 	
 void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)                                    
 {
-	static int Frame=192;	 //has to be at start or scope errors l8r
+	static int Frame=155;	 //has to be at start or scope errors l8r
 	static bool jumpingUp=0;
 	static int FrameCount=0;
 	int grid_x_invisibleMan=invisibleMan_x[i]/64;
@@ -1608,7 +1684,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	if((invisibleMan_y[i]+45)<height)
 	grid_y_invisibleMan=(invisibleMan_y[i]+45)/64;
 	static int currentIdleFrame[3]={0};
-	int IdleFramepos[3]={59,111,149};
+	int IdleFramepos[3]={49,83,117};
 	static int Jumping_x=0;
 	static int Jumping_y=0;
 	
@@ -1840,7 +1916,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 		}
 	if(!invisibleManIdle[i])
-	invisibleManSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
+	invisibleManSp[i].setTextureRect(IntRect(Frame,0,30,110));//staring x, staring y ,widht,height
 	
 	if(!invisibleManIdle[i])
 		{
@@ -1902,11 +1978,11 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 
 	if(FrameCount%120==0)
-		Frame+=33;
+		Frame+=37;
 
 	
-	if(Frame>300)
-		Frame=192;
+	if(Frame>262)
+		Frame=155;
 
 
 	FrameCount++;
