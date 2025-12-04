@@ -34,7 +34,10 @@ void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_siz
 
 //starting work on power ups
 
-
+bool power_deploy(int enemy_x, int enemy_y,int& power_x, int &power_y,int width , int height, int& power_select);
+void power_display(int power_x, int power_y, Texture& texpower, Sprite& power,int power_select );
+bool pick_up(int power_x, int power_y, int player_x, int player_y, int playerWidth, int playerHeight,bool powerPlaced);// to be assigned to power on
+void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width ,bool power_on);
 
 
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives);
@@ -2265,7 +2268,7 @@ bool pick_up(int power_x, int power_y, int player_x, int player_y, int playerWid
 		}
 	else return 0;// power on 
 }	
-void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width )
+void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width ,bool power_on)
 {
 	switch (power_select)
 	{
@@ -2284,4 +2287,5 @@ void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& v
 	default:
 		break;
 	}
+power_on=0;
 }
