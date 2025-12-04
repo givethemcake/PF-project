@@ -28,7 +28,11 @@ int screen_x = 1152;
 int screen_y = 1000;
 
 
-void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun);// to reload the furrent level 
+void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun);// to reload the current level 
+
+//starting work on power ups
+void powerUp(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun, int& lives, int& speed,int& vacuum_width,int& vacuum_range);
+
 
 
 void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives);
@@ -608,11 +612,13 @@ void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY,
 
 
 
-		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#'){
+		if(lvl[mid_y][mid_x]=='#'||lvl[bottom_y][mid_x]=='#')
+		{
 			player_y-=2;
 		}
 		else 
-			if(lvl[top_y][mid_x]=='#'){
+			if(lvl[top_y][mid_x]=='#')
+			{
 
 					player_y+=2;
 
@@ -1915,5 +1921,24 @@ void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_siz
 	player_y=(height-2)*cell_size-PlayerHeight;
 	PlayerSprite.setPosition(player_x,player_y);
 	FirstRun=1;
+	return;
+}
+void powerUp(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun, int& lives,float& speed,int& vacuum_width,int& vacuum_range, int& vacuum_y)
+{	// should be removed if player dies
+	 // condition if enemy defeat by a three enemy ball
+	int power =rand()%2;
+	if(power==0)// life boost
+		lives++;
+	else if(power==1)// double speed boost
+		speed*=2;
+	else if(power==2)// 
+		{
+			vacuum_range+=50;
+		}
+	else if(power==3)
+		{
+			vacuum_width+=10;
+			vacuum_y-=	5;// to balance the vacuum baem withrespect to its center	
+		}
 	return;
 }
