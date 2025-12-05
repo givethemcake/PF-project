@@ -1706,7 +1706,7 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
         } else skeleton_y[i] = vacuum_start_y; //snaps
         
         //check if capture
-        if (skeleton_x[i] == (int)vacuum_start_x && skeleton_y[i] == (int)vacuum_start_y) { //int because ghost_x and ghost_y are integers, woudl alwyas be false with a decimal
+        if (skeleton_x[i] == (int)vacuum_start_x && skeleton_y[i] == (int)vacuum_start_y) { 
             if (captured_count < maxcap) {
                 captured_enemies_index[captured_count] = i;
                 captured_count += 1;
@@ -1715,11 +1715,12 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
                 SkeletonBeingPulled[i] = false;
                 skeleton_x[i] = -1000;
                 skeleton_y[i] = -1000;
-                }
-        
+            }
+        } 
+    } 
+    else { 
     
-    if (skeleton_x[i] > 0) { //only runs if on screen
-    
+        if (skeleton_x[i] > 0) { //only runs if on screen
     
 
 
@@ -2008,8 +2009,8 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	}
 }
-		}
-	}
+}
+	
 
 
 
