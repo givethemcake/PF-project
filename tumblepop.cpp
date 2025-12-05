@@ -1,12 +1,5 @@
-
 //current plan for shooting - captured_enemies_index[i] for number of enemy (like ghost 1 or 2 or 3...), new array captured_enemies_type[i], need like a Last in First out structure so just use these two arrays ez
-
-
 //todo add win condition for level one
-
-
-
-
 //To Aazan when an enemy is captured decrease their count by one plz
 
 
@@ -18,6 +11,7 @@
 #include <SFML/Window.hpp>
 #include<cstdlib>
 #include<ctime>
+#include<string>
 
 
 
@@ -286,6 +280,50 @@ int main()
 
 	int counter=1;
 	//PlayerSprite.setTextureRect(IntRect(counter*frarmeWidth,0,frarmeWidth,frameHeight));
+
+
+
+
+
+	//All text for the game window
+
+
+	//handle the font
+	Font font;
+	font.loadFromFile("Data/Font.otf");
+
+
+
+
+	Text livesText;
+	Text ScoreText;
+	Text capturedText;
+
+	ScoreText.setFont(font);
+	livesText.setFont(font);
+	capturedText.setFont(font);
+
+	ScoreText.setCharacterSize(50);
+	livesText.setCharacterSize(50);
+	capturedText.setCharacterSize(50);
+
+	livesText.setPosition(64,42);
+	ScoreText.setPosition((14*64),42);
+	capturedText.setPosition((((64)+14*64)/2)-128,42);
+	
+
+	// livesText.setString("Lives : %d",lives);
+
+	ScoreText.setFillColor(Color::Red);
+	livesText.setFillColor(Color::Red);
+	capturedText.setFillColor(Color::Red);
+
+    // Initial string
+    livesText.setString("Lives: " + to_string(lives));
+	ScoreText.setString("Score: "+ to_string(score));
+	capturedText.setString("Enemies Captured: " + to_string(captured_count));
+
+
 	
 	while (window.isOpen())
 	{
@@ -328,6 +366,19 @@ int main()
 		if(lives<=0)//lives check 
 			{
 
+				bgTex.loadFromFile("Data/GameOver.png");
+				bgSprite.setTexture(bgTex);
+
+
+				float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
+				float scaleY = (height * cell_size) / (float)bgTex.getSize().y;
+				bgSprite.setScale(scaleX, scaleY);
+
+				window.draw(bgSprite);
+				window.display();
+
+				int temp;
+				cin>>temp;
 				cout<<"game over"<<endl;
 				break;
 
@@ -419,7 +470,7 @@ int main()
 		
 		
 		
-		level=2; // changed level for testing
+		level=1; // changed level for testing
 		if(level==1){
 			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
@@ -440,7 +491,15 @@ int main()
 			level_three(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width);
 		}
 
+		ScoreText.setString("Score: "+ to_string(score));
+		livesText.setString("Lives: " +to_string(lives));
+		capturedText.setString("Enemies Captured: " + to_string(captured_count));
+
+
 		
+		window.draw(livesText);
+		window.draw(ScoreText);
+		window.draw(capturedText);
 		window.display();
 
 		FirstRun=0;
@@ -917,6 +976,8 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 								player_y+=cell_size/2;
 						}
 					
+
+
 				}
 				
 
@@ -999,7 +1060,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 		
 				if(frameCount%20==0){
 						frame+=Framewidth;
-					cout<<"OnGround is"<<onGround;
+					//cout<<"OnGround is"<<onGround;
 					//cout<<"Added to player Frame";
 				}
 
@@ -1523,321 +1584,367 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 
 void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap)                                    
 {
-	static int Frame=192;	 //has to be at start or scope errors l8r
-	static bool jumpingUp=0;
-	static int FrameCount=0;
-	int grid_x_skeleton=skeleton_x[i]/64;
-	int grid_y_skeleton=(skeleton_y[i]+45)/64;
-	if((skeleton_y[i]+45)<height)
-	grid_y_skeleton=(skeleton_y[i]+45)/64;
-	static int currentIdleFrame[3]={0};
-	int IdleFramepos[3]={59,111,149};
-	static int Jumping_x=0,Jumping_y=0;
-	
-	
-	
-	
-	//cout<<i<<endl;
-	
-	
-	
-	
-	
-	float vacuum_start_x, vacuum_start_y; //same pulling system as ghost
-	if (vacuum_x == 1) { //aiming right
-	vacuum_start_x = player_x + PlayerWidth; //far right of player png
-	} else if (vacuum_x == -1) { //aiming left
-	vacuum_start_x = player_x; //far left of player sprite
-	} else vacuum_start_x = player_x + PlayerWidth/2; //if aiming up or down, use horizontal center
-	
-	if (vacuum_y == -1) { //aiming up
-	vacuum_start_y = player_y; //top edge
-	} else if (vacuum_y == 1) { //aiming down
-	vacuum_start_y = player_y + PlayerHeight;
-	} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
-	
-	const float pullspeed = 3;
-	if (SkeletonBeingPulled[i]) {
-		
-		if (!Keyboard::isKeyPressed(Keyboard::Space)) {
-			SkeletonBeingPulled[i] = false; //stops pulling if let go of space
-			return;
-		}
-		
-		float dx = vacuum_start_x - skeleton_x[i]; //horizontal distance
-		float dy = vacuum_start_y - skeleton_y[i]; //vertical distance
-		if (dx > pullspeed) { //target to the left
-			skeleton_x[i] += pullspeed;
-		} else if (dx < -pullspeed) { //target to the right
-			skeleton_x[i] -= pullspeed;
-		} else skeleton_x[i] = vacuum_start_x; //snaps the target to the vacuum to prevent it moving past
-		
-		if (dy > pullspeed) { //target is up
-			skeleton_y[i] += pullspeed;
-		} else if (dy < -pullspeed) { //target is down
-			skeleton_y[i] -= pullspeed;
-		} else skeleton_y[i] = vacuum_start_y; //snaps
-		
-		//check if capture
-		if (skeleton_x[i] == (int)vacuum_start_x && skeleton_y[i] == (int)vacuum_start_y) { //int because ghost_x and ghost_y are integers, woudl alwyas be false with a decimal
-			if (captured_count < maxcap) {
-				captured_enemies_index[captured_count] = i;
-				captured_count += 1;
-				
-				//reset pull and move ghost off camera
-				SkeletonBeingPulled[i] = false;
-				skeleton_x[i] = -1000;
-				skeleton_y[i] = -1000;
-				}
-			}
-		} 
-	else { //if not being pulled, normal patrol
-	
-	if (skeleton_x[i] > 0) { //only runs if on screen
-	
-	
+    static int Frame=192;    //has to be at start or scope errors l8r
+    static bool jumpingUp=0;
+    static int FrameCount=0;
+    int grid_x_skeleton=skeleton_x[i]/64;
+    int grid_y_skeleton=(skeleton_y[i]+45)/64;
+    if((skeleton_y[i]+45)<height)
+    grid_y_skeleton=(skeleton_y[i]+45)/64;
+    static int currentIdleFrame[3]={0};
+    int IdleFramepos[3]={59,111,149};
+    static int Jumping_x=0,Jumping_y=0;
+    int JumpingFramePos=727;
+    static float dest_x[20]={0};
+    static float dest_y[20]={0};
+    static bool isMoving[20]={0};
+    
+    
+    //cout<<i<<endl;
+    
+    
+    
+    
+    
+    float vacuum_start_x, vacuum_start_y; //same pulling system as ghost
+    if (vacuum_x == 1) { //aiming right
+    vacuum_start_x = player_x + PlayerWidth; //far right of player png
+    } else if (vacuum_x == -1) { //aiming left
+    vacuum_start_x = player_x; //far left of player sprite
+    } else vacuum_start_x = player_x + PlayerWidth/2; //if aiming up or down, use horizontal center
+    
+    if (vacuum_y == -1) { //aiming up
+    vacuum_start_y = player_y; //top edge
+    } else if (vacuum_y == 1) { //aiming down
+    vacuum_start_y = player_y + PlayerHeight;
+    } else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
+    
+    const float pullspeed = 3;
+    if (SkeletonBeingPulled[i]) {
+        
+        if (!Keyboard::isKeyPressed(Keyboard::Space)) {
+            SkeletonBeingPulled[i] = false; //stops pulling if let go of space
+            return;
+        }
+        
+        float dx = vacuum_start_x - skeleton_x[i]; //horizontal distance
+        float dy = vacuum_start_y - skeleton_y[i]; //vertical distance
+        if (dx > pullspeed) { //target to the left
+            skeleton_x[i] += pullspeed;
+        } else if (dx < -pullspeed) { //target to the right
+            skeleton_x[i] -= pullspeed;
+        } else skeleton_x[i] = vacuum_start_x; //snaps the target to the vacuum to prevent it moving past
+        
+        if (dy > pullspeed) { //target is up
+            skeleton_y[i] += pullspeed;
+        } else if (dy < -pullspeed) { //target is down
+            skeleton_y[i] -= pullspeed;
+        } else skeleton_y[i] = vacuum_start_y; //snaps
+        
+        //check if capture
+        if (skeleton_x[i] == (int)vacuum_start_x && skeleton_y[i] == (int)vacuum_start_y) { //int because ghost_x and ghost_y are integers, woudl alwyas be false with a decimal
+            if (captured_count < maxcap) {
+                captured_enemies_index[captured_count] = i;
+                captured_count += 1;
+                
+                //reset pull and move ghost off camera
+                SkeletonBeingPulled[i] = false;
+                skeleton_x[i] = -1000;
+                skeleton_y[i] = -1000;
+                }
+            }
+        } 
+    else { //if not being pulled, normal patrol
+    
+    if (skeleton_x[i] > 0) { //only runs if on screen
+    
+    
 
 
 
+	//first calculate if the skeleton is moving if not then find jumping destination 
+	//after valid jump spot is found set moving to 1
+	//when moving is 1 move skel 10 pxs every frame till reaches jump spot
 
+    if(skeletonJumping[i])
+    {
 
-	if(skeletonJumping[i] && jumpCoolDown[i]==0)
-	{
+        if(!isMoving[i])
+        {
+             bool foundSpot = false;
 
-		if(jumpingUp)
-		{
-			//jumping up
+            if(jumpingUp)
+            {
+                //jumping up
 
-			for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0 && skeletonJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
-			{
-				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+                for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0 && skeletonJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
+                {
+                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+                        {
+                            if(lvl[skelheight][row]=='#'){
+                                cout<<skelheight<<endl<<row<<endl;
+                                dest_x[i]=row*cell_size;
+                                dest_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+                                cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
+                                // int temp;
+                                // cin>>temp;
+                                foundSpot=true;
+                                break;
+                            }
+                        
+                        }
+                    if(foundSpot) break;
+                }
+
+            }
+            
+            else{
+
+                //jumping down
+                // cout<<"jumped donwn"<<endl;
+
+                for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1 && skeletonJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
+                {
+                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
+                        {
+                            if(lvl[skelheight][row]=='#'){
+                                cout<<skelheight<<endl<<row<<endl;
+                                // cout<<"Valid Spot found";
+                                // int temp;
+                                // cin>>temp;
+                                dest_x[i]=row*cell_size;
+                                dest_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
+                                cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
+                                // int temp;
+                                // cin>>temp;
+                                foundSpot=true;
+                                break;
+                            }
+                    
+                        
+                        }
+                    if(foundSpot) break;
+                }
+
+            
+             }
+
+             if(foundSpot)
+             {
+                 isMoving[i]=true;
+             }
+             else
+             {
+                 skeletonJumping[i]=0;
+             }
+        }
+        else
+        {
+            float dx=dest_x[i]-skeleton_x[i]; 
+            float dy=dest_y[i]-skeleton_y[i];
+            float dist= sqrt(dx*dx + dy*dy);
+
+			 //find the current distance of the skel from the target x and y 
+            float Pixels = 10; //no of pixels the skel jumps per iteration
+
+            if(dist <= Pixels)
+            {
+						skeleton_x[i] = static_cast<int>(dest_x[i]);
+						skeleton_y[i] = static_cast<int>(dest_y[i]);
+						isMoving[i] = false;
+						skeletonJumping[i] = 0;
+            }
+				else
 					{
-						if(lvl[skelheight][row]=='#'){
-							cout<<skelheight<<endl<<row<<endl;
-							skeleton_x[i]=row*cell_size;
-							skeleton_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
-							cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
-							// int temp;
-							// cin>>temp;
-							skeletonJumping[i]=0;
-							break;
-						}
-					
+						skeleton_x[i] += static_cast<int>((dx/dist)*Pixels);
+						skeleton_y[i] += static_cast<int>((dy/dist)*Pixels);
 					}
-			}
+            
+			
+					skeletonSp[i].setTextureRect(IntRect(JumpingFramePos,0,32,110));
+        }
+    }
 
-		}
-		
-		else{
 
-			//jumping down
-			// cout<<"jumped donwn"<<endl;
 
-			for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1 && skeletonJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
-			{
-				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
-					{
-						if(lvl[skelheight][row]=='#'){
-							cout<<skelheight<<endl<<row<<endl;
-							// cout<<"Valid Spot found";
-							// int temp;
-							// cin>>temp;
-							skeleton_x[i]=row*cell_size;
-							skeleton_y[i]=((skelheight-1)*cell_size)-(cell_size/2)-4;
-							cout<<"skeleton jumped to "<<skeleton_x[i]<<" and "<<skeleton_y[i];
-							// int temp;
-							// cin>>temp;
-							skeletonJumping[i]=0;
-							break;
-						}
-				
-					
-					}
-			}
 
-	 	
-	}
+
+
+    if(!skeletonJumping[i])
+    {
+
+    if(skeletonIdle[i]){ //if the skeleton is idle handle the animations
+    
+    
+        if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
+            currentIdleFrame[i]++;
+            
+        }
+        
+
+        //currentIdleFrame[i]=(currentIdleFrame[i]>2?0:currentIdleFrame[i]);
+
+        if(currentIdleFrame[i]>2)
+        {
+                    skeletonIdle[i]=0;
+                    currentIdleFrame[i]=0;
+
+        }
+        else
+            skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+        
+    }
+
+
+    if(!skeletonIdle[i]) //if the skeleton is not idle move either left or right
+            if(!skeletonMovingLeft[i]){
+                
+                
+                if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
+                    skeletonMovingLeft[i]=1;
+                    if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#' &&  skeletonJumping[i]==0 && jumpCoolDown[i]==0){ 
+                        //if the skeleton changes direction because it reached an edge
+                            skeletonJumping[i]=1;
+                            jumpCoolDown[i]=600;
+                            isMoving[i]=0;
+                            Jumping_x=grid_x_skeleton;
+                            Jumping_y=grid_y_skeleton;
+                            if(rand()%100>50)
+                                jumpingUp=1;
+                            else    
+                                jumpingUp=0;
+                        }
+                }
+                else
+                    if(grid_x_skeleton+1<width-1 ){
+                        skeleton_x[i]+=1;
+                        
+                    
+                    }else{
+                        skeletonMovingLeft[i]=1;
+
+                    }
+            
+            }
+            else
+            
+            if(skeletonMovingLeft[i])
+
+                if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
+                    skeletonMovingLeft[i]=0;
+
+                    if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton]!='#' && skeletonJumping[i]==0 && jumpCoolDown[i]==0){ 
+                        //if the skeleton changes direction because it reached an edge
+                            skeletonJumping[i]=1;
+                            jumpCoolDown[i]=600;
+                            isMoving[i]=0;
+                            Jumping_x=grid_x_skeleton;
+                            Jumping_y=grid_y_skeleton;
+                            if(rand()%100>50)
+                                jumpingUp=1;
+                            else 
+                                jumpingUp=0;
+
+                        }
+                }
+                
+                else
+                    if(grid_x_skeleton-1>=0 )
+                    skeleton_x[i]-=1;
+                    else    
+                    skeletonMovingLeft[i]=0;
+                
+        }       
+    }
+
+
+    skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
+
+    if(!SkeletonBeingPulled)//dont kill player if being sucked
+        if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
+        {
+            player_x=cell_size;
+            player_y=(height-2)*cell_size-PlayerHeight;
+            PlayerSprite.setPosition(player_y,player_x);
+            lives--;
+
+        }
+    
+    if(!skeletonIdle[i] && !skeletonJumping[i])
+    skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
+    
+    if(!skeletonIdle[i])
+        {
+            if(!skeletonMovingLeft[i]){
+                skeletonSp[i].setScale(-2,2);
+                skeletonSp[i].setOrigin(32,0);
+            }
+            else {
+                skeletonSp[i].setScale(2,2);
+                skeletonSp[i].setOrigin(0,0);   
+            }
+        }
+        //ensuer enouh frames have passed for random movement change again
+
+
+    if(FrameCount-FramePosForChange[i]==1200ull)
+    {
+        cout<<FrameCount-FramePosForChange[i];
+        posChangeHappened[i]=0;
+    }
+
+
+
+
+
+
+    if(!posChangeHappened[i]&&!skeletonJumping[i])
+        {
+                int check=rand()%100;
+    
+            if(check<30){ 
+                        
+
+                        //change direcation
+                    skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
+                    cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
+                    currentSkeleton++;
+                    posChangeHappened[i]=1;
+                    FramePosForChange[i]=FrameCount;
+                    currentSkeleton=currentSkeleton>3?0:currentSkeleton;
+                    //clamp to zero and 3
+            }else if(!skeletonIdle[i] && (FrameCount+i*150)%600<10)
+                {
+                    //turn idle
+                    currentIdleFrame[i]=0;
+                    cout<<"\nSkeleton "<<i<<" is Idle\n";
+                    skeletonIdle[i]=1;
+                    skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
+                    currentIdleFrame[i]=0;
+                    FramePosForChange[i]=Frame;
+                    
+                }   
+    
+    }
+
+        
+    jumpCoolDown[i]-=1;
+    jumpCoolDown[i]=jumpCoolDown[i]<0?0:jumpCoolDown[i];
+
+
+    if(FrameCount%120==0)
+        Frame+=33;
+
+    
+    if(Frame>300)
+        Frame=192;
+
+
+    FrameCount++;
+    return;//end of func
+
+
 }
-
-
-
-
-
-
-
-
-
-
-	if(skeletonIdle[i]){ //if the skeleton is idle handle the animations
-	
-	
-		if(/*!posChangeHappened[i]*/ FrameCount-FramePosForChange[i]==300ull){
-			currentIdleFrame[i]++;
-			
-		}
-		
-
-		//currentIdleFrame[i]=(currentIdleFrame[i]>2?0:currentIdleFrame[i]);
-
-		if(currentIdleFrame[i]>2)
-		{
-					skeletonIdle[i]=0;
-					currentIdleFrame[i]=0;
-
-		}
-		else
-			skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
-		
-	}
-
-
-	if(!skeletonIdle[i]) //if the skeleton is not idle move either left or right
-			if(!skeletonMovingLeft[i]){
-				
-				
-				if(lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#'||lvl[grid_y_skeleton][grid_x_skeleton+1]=='#'){
-					skeletonMovingLeft[i]=1;
-					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton+1]!='#' &&  skeletonJumping[i]==0 && jumpCoolDown){ 
-						//if the skeleton changes direction because it reached an edge
-							skeletonJumping[i]=1;
-							jumpCoolDown[i]=600;
-							Jumping_x=grid_x_skeleton;
-							Jumping_y=grid_y_skeleton;
-							if(rand()%100>50)
-								jumpingUp=1;
-							else	
-								jumpingUp=0;
-						}
-				}
-				else
-					if(grid_x_skeleton+1<width-1 ){
-						skeleton_x[i]+=1;
-						
-					
-					}else{
-						skeletonMovingLeft[i]=1;
-
-					}
-			
-			}
-			else
-			
-			if(skeletonMovingLeft[i])
-
-				if(lvl[grid_y_skeleton+1][grid_x_skeleton]!='#'||lvl[grid_y_skeleton][grid_x_skeleton]=='#'){ //for some incredible dumb reason x-1 causes it to not hit the left wall
-					skeletonMovingLeft[i]=0;
-
-					if((rand()%100)>60 && lvl[grid_y_skeleton+1][grid_x_skeleton]!='#' && skeletonJumping[i]==0 && jumpCoolDown==0){ 
-						//if the skeleton changes direction because it reached an edge
-							skeletonJumping[i]=1;
-							jumpCoolDown[i]=600;
-							Jumping_x=grid_x_skeleton;
-							Jumping_y=grid_y_skeleton;
-							if(rand()%100>50)
-								jumpingUp=1;
-							else 
-								jumpingUp=0;
-
-						}
-				}
-				
-				else
-					if(grid_x_skeleton-1>=0 )
-					skeleton_x[i]-=1;
-					else	
-					skeletonMovingLeft[i]=0;
-				
-				
-	}
-	}
-
-
-	skeletonSp[i].setPosition(skeleton_x[i],skeleton_y[i]);
-
-	if(!SkeletonBeingPulled)//dont kill player if being sucked
-		if(!(player_x<skeleton_x[i]-50||player_x>skeleton_x[i]+50)&&!(player_y<skeleton_y[i]-32||player_y>skeleton_y[i]+32)) //skeleton player collision check
-		{
-			player_x=cell_size;
-			player_y=(height-2)*cell_size-PlayerHeight;
-			PlayerSprite.setPosition(player_y,player_x);
-			lives--;
-
-		}
-	
-		if(!skeletonIdle[i])
-	skeletonSp[i].setTextureRect(IntRect(Frame,0,32,110));//staring x, staring y ,widht,height
-	
-	if(!skeletonIdle[i])
-		{
-			if(!skeletonMovingLeft[i]){
-				skeletonSp[i].setScale(-2,2);
-				skeletonSp[i].setOrigin(32,0);
-			}
-			else {
-				skeletonSp[i].setScale(2,2);
-				skeletonSp[i].setOrigin(0,0);	
-			}
-		}
-		//ensuer enouh frames have passed for random movement change again
-
-
-	if(FrameCount-FramePosForChange[i]==1200ull)
-	{
-		cout<<FrameCount-FramePosForChange[i];
-		posChangeHappened[i]=0;
-	}
-
-
-
-
-
-
-	if(!posChangeHappened[i]&&!skeletonJumping[i])
-		{
-				int check=rand()%100;
-	
-			if(check<30){ 
-						
-
-						//change direcation
-					skeletonMovingLeft[currentSkeleton]=!skeletonMovingLeft[currentSkeleton];
-					cout<<"change for skeleton "<<currentSkeleton<<"at frame "<<FrameCount<<endl;
-					currentSkeleton++;
-					posChangeHappened[i]=1;
-					FramePosForChange[i]=FrameCount;
-					currentSkeleton=currentSkeleton>3?0:currentSkeleton;
-					//clamp to zero and 3
-			}else if(!skeletonIdle[i] && (FrameCount+i*150)%600<10)
-				{
-					//turn idle
-					currentIdleFrame[i]=0;
-					cout<<"\nSkeleton "<<i<<" is Idle\n";
-					skeletonIdle[i]=1;
-					skeletonSp[i].setTextureRect(IntRect(IdleFramepos[currentIdleFrame[i]],0,32,110));
-					currentIdleFrame[i]=0;
-					FramePosForChange[i]=Frame;
-					
-				}	
-	
-	}
-
-		
-	jumpCoolDown[i]-=1;
-	jumpCoolDown[i]=jumpCoolDown[i]<0?0:jumpCoolDown[i];
-
-
-	if(FrameCount%120==0)
-		Frame+=33;
-
-	
-	if(Frame>300)
-		Frame=192;
-
-
-	FrameCount++;
-	return;//end of func
-
-
 }
 
 
@@ -1912,7 +2019,14 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	int IdleFramepos[3]={49,83,117};
 	static int Jumping_x=0;
 	static int Jumping_y=0;
-	
+	static int tpCounter[4]={0}; //count the frames  for jumping max frames for jumping 
+    static bool isFadingIn[4]={0};
+    static int TargetJumpX[4]={0}; // Store the target X so we don't find it again
+    static int TargetJumpY[4]={0}; // Store the target Y
+	int JumpingFramesPos[4]={366,400,435,469};
+
+
+
 	
 	//cout<<i<<endl;
 	
@@ -1970,71 +2084,62 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 		} 
 	else { //if not being pulled, normal patrol
 	
-	if (invisibleMan_x[i] > 0) { //only runs if on screen
+	
+	
+	
+	
+	
+			
+	
+	
+		if (invisibleMan_x[i] > 0) { //only runs if on screen
 	
 	
 
 
 
 
+		if(invisibleManJumping[i]) 
+	    {
 
-		if(invisibleManJumping[i] && jumpCoolDown[i]==0)
-	{
+            int renderFrame = tpCounter[i];
+            if (renderFrame > 3) renderFrame = 3;
+            if (renderFrame < 0) renderFrame = 0;
 
-		if(jumpingUp)
-		{
-			//jumping up
-
-			for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0 && invisibleManJumping[i]==1;skelheight--) //check 5 rows above dont check above index 1
-			{
-				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
-					{
-						if(lvl[skelheight][row]=='#'){
-							cout<<skelheight<<endl<<row<<endl;
-							invisibleMan_x[i]=row*cell_size;
-							invisibleMan_y[i]=((skelheight-1)*cell_size)-(cell_size/2);
-							cout<<"invisibleMan jumped to "<<invisibleMan_x[i]<<" and "<<invisibleMan_y[i];
-							// int temp;
-							// cin>>temp;
-							invisibleManJumping[i]=0;
-							break;
-						}
-					
-					}
-			}
-
-		}
-		
-		else{
-
-			//jumping down
-			// cout<<"jumped donwn"<<endl;
-
-			for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1 && invisibleManJumping[i]==1;skelheight++) //check 5 rows above dont check above index 1
-			{
-				for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++) //check 5 cols above 2 on each side on above
-					{
-						if(lvl[skelheight][row]=='#'){
-							cout<<skelheight<<endl<<row<<endl;
-							// cout<<"Valid Spot found";
-							// int temp;
-							// cin>>temp;
-							invisibleMan_x[i]=row*cell_size;
-							invisibleMan_y[i]=((skelheight-1)*cell_size)-(cell_size/2);
-							cout<<"invisibleMan jumped to "<<invisibleMan_x[i]<<" and "<<invisibleMan_y[i];
-							// int temp;
-							// cin>>temp;
-							invisibleManJumping[i]=0;
-							break;
-						}
-				
-					
-					}
-			}
-
-	 	
-	}
-}
+            invisibleManSp[i].setTextureRect(IntRect(JumpingFramesPos[renderFrame],0,32,110));
+            
+        
+            if(FrameCount%10==0)
+            {
+                if(!isFadingIn[i])
+                {
+                    tpCounter[i]++;
+                    
+                    if(tpCounter[i] > 3)
+                    {
+                       
+                        if (TargetJumpX[i] != 0 && TargetJumpY[i] != 0) {
+                            invisibleMan_x[i] = TargetJumpX[i];
+                            invisibleMan_y[i] = TargetJumpY[i];
+                            cout<<"invisibleMan teleported to "<<invisibleMan_x[i]<<" and "<<invisibleMan_y[i];
+                        }
+                        
+                        isFadingIn[i] = 1;
+                        tpCounter[i] = 3;
+                    }
+                }
+                else
+                {
+                    tpCounter[i]--;
+                    if(tpCounter[i] < 0)
+                    {
+                        invisibleManJumping[i]=0;
+                        tpCounter[i]=0;
+                        isFadingIn[i]=0;
+                    }
+                }
+            }
+        }
 
 
 
@@ -2068,7 +2173,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	}
 
 
-	if(!invisibleManIdle[i]) //if the invisibleMan is not idle move either left or right
+	if(!invisibleManIdle[i] && !invisibleManJumping[i]) //if the invisibleMan is not idle and not ready to jump move either left or right
 			if(!invisibleManMovingLeft[i]){
 				
 				
@@ -2076,14 +2181,57 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 					invisibleManMovingLeft[i]=1;
 					if((rand()%100)>60 && lvl[grid_y_invisibleMan+1][grid_x_invisibleMan+1]!='#' &&  invisibleManJumping[i]==0 && jumpCoolDown){ 
 						//if the invisibleMan changes direction because it reached an edge
-							invisibleManJumping[i]=1;
-							jumpCoolDown[i]=600;
-							Jumping_x=grid_x_invisibleMan;
+                            
+                            // Check for valid spot first
+                            bool foundSpot = false;
+                            Jumping_x=grid_x_invisibleMan;
 							Jumping_y=grid_y_invisibleMan;
 							if(rand()%100>50)
 								jumpingUp=1;
 							else	
 								jumpingUp=0;
+                            
+                            
+                            if(jumpingUp)
+                            {
+                                for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0;skelheight--)
+                                {
+                                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++)
+                                    {
+                                        if(lvl[skelheight][row]=='#'){
+                                            TargetJumpX[i] = row*cell_size;
+                                            TargetJumpY[i] = ((skelheight-1)*cell_size)-(cell_size/2);
+                                            foundSpot = true;
+                                            break;
+                                        }
+                                    }
+                                    if(foundSpot) break;
+                                }
+                            }
+                            else
+                            {
+                                 for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1;skelheight++)
+                                {
+                                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++)
+                                    {
+                                        if(lvl[skelheight][row]=='#'){
+                                            TargetJumpX[i] = row*cell_size;
+                                            TargetJumpY[i] = ((skelheight-1)*cell_size)-(cell_size/2);
+                                            foundSpot = true;
+                                            break;
+                                        }
+                                    }
+                                    if(foundSpot) break;
+                                }
+                            }
+
+                            if (foundSpot) {
+                                invisibleManJumping[i]=1;
+                                jumpCoolDown[i]=600;
+                                tpCounter[i]=0;
+                                isFadingIn[i]=0;
+                                invisibleManSp[i].setTextureRect(IntRect(JumpingFramesPos[0],0,32,110));
+                            }
 						}
 				}
 				else
@@ -2106,14 +2254,55 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 					if((rand()%100)>60 && lvl[grid_y_invisibleMan+1][grid_x_invisibleMan]!='#' && invisibleManJumping[i]==0 && jumpCoolDown==0){ 
 						//if the invisibleMan changes direction because it reached an edge
-							invisibleManJumping[i]=1;
-							jumpCoolDown[i]=600;
-							Jumping_x=grid_x_invisibleMan;
+                            
+                            bool foundSpot = false;
+                            Jumping_x=grid_x_invisibleMan;
 							Jumping_y=grid_y_invisibleMan;
 							if(rand()%100>50)
 								jumpingUp=1;
 							else 
 								jumpingUp=0;
+                            
+                            if(jumpingUp)
+                            {
+                                for(int skelheight=Jumping_y-2;skelheight>Jumping_y-5&&skelheight>0;skelheight--)
+                                {
+                                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++)
+                                    {
+                                        if(lvl[skelheight][row]=='#'){
+                                            TargetJumpX[i] = row*cell_size;
+                                            TargetJumpY[i] = ((skelheight-1)*cell_size)-(cell_size/2);
+                                            foundSpot = true;
+                                            break;
+                                        }
+                                    }
+                                    if(foundSpot) break; //check for valid jump spot before starting anims and tping
+                                }
+                            }
+                            else
+                            {
+                                 for(int skelheight=Jumping_y+3;skelheight<Jumping_y+7&&skelheight<height-1;skelheight++)
+                                {
+                                    for(int row=Jumping_x-2;row<Jumping_x+2&&row>0&&row<width-3;row++)
+                                    {
+                                        if(lvl[skelheight][row]=='#'){
+                                            TargetJumpX[i] = row*cell_size;
+                                            TargetJumpY[i] = ((skelheight-1)*cell_size)-(cell_size/2);
+                                            foundSpot = true;
+                                            break;
+                                        }
+                                    }
+                                    if(foundSpot) break;
+                                }
+                            }
+
+                            if (foundSpot) {
+                                invisibleManJumping[i]=1;
+                                jumpCoolDown[i]=600;
+                                tpCounter[i]=0;
+                                isFadingIn[i]=0;
+                                invisibleManSp[i].setTextureRect(IntRect(JumpingFramesPos[0],0,32,110));
+                            }
 
 						}
 				}
@@ -2131,8 +2320,8 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 	invisibleManSp[i].setPosition(invisibleMan_x[i],invisibleMan_y[i]);
 
-	if(!invisibleManBeingPulled)//only collide if not being sucked
-	if(!(player_x<invisibleMan_x[i]-50||player_x>invisibleMan_x[i]+50)&&!(player_y<invisibleMan_y[i]-32||player_y>invisibleMan_y[i]+32)) //invisibleMan player collision check
+	if(!invisibleManBeingPulled[i])//only collide if not being sucked
+	if(!(player_x<invisibleMan_x[i]-50||player_x>invisibleMan_x[i]+50)&&!(player_y<invisibleMan_y[i]-55||player_y>invisibleMan_y[i]+55)) //invisibleMan player collision check
 		{
 			player_x=cell_size;
 			player_y=(height-2)*cell_size-PlayerHeight;
@@ -2140,10 +2329,10 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 			lives--;
 
 		}
-	if(!invisibleManIdle[i])
+	if(!invisibleManIdle[i] && !invisibleManJumping[i])
 	invisibleManSp[i].setTextureRect(IntRect(Frame,0,30,110));//staring x, staring y ,widht,height
 	
-	if(!invisibleManIdle[i])
+	if(!invisibleManIdle[i] && !invisibleManJumping[i])
 		{
 			if(!invisibleManMovingLeft[i]){
 				invisibleManSp[i].setScale(-2,2);
@@ -2202,12 +2391,23 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 	jumpCoolDown[i]=jumpCoolDown[i]<0?0:jumpCoolDown[i];
 
 
-	if(FrameCount%120==0)
-		Frame+=37;
 
-	
-	if(Frame>262)
-		Frame=155;
+
+
+
+	if(!invisibleManJumping[i])
+    {
+            if(FrameCount%120==0)
+                    Frame+=37;
+
+                
+                if(Frame>262)
+                    Frame=155;
+
+
+                
+    }
+
 
 
 	FrameCount++;
@@ -2215,6 +2415,8 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 
 
 }
+
+
 
 void reload(float& player_x, float& player_y, Sprite &PlayerSprite, int cell_size, int height, int PlayerHeight, bool& FirstRun)
 {
