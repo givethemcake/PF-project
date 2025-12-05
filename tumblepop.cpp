@@ -2122,4 +2122,5 @@ void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeigh
 			}
 		}
 	else keyHeld = false;
+
 }
