@@ -2288,4 +2288,63 @@ void power_up(int power_select, int& speed,int& lives, int& vacuum_range, int& v
 		break;
 	}
 power_on=0;
+void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeight, int vacuum_x, int vacuum_y, int captured_enemies_index[], int captured_enemies_type[], int& captured_count, int Ghost_x[], int Ghost_y[], float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], float SkeletonShotVelX[], float SkeletonShotVelY[], int invisibleMan_x[], int invisibleMan_y[], float InvisibleManShotVelX[], float InvisibleManShotVelY[])
+{
+
+	bool keyHeld = false; //using this because if its not there, holding E will just make them all fire out instantly
+	if (Keyboard::isKeyPressed(Keyboard::E)) {
+		if (!keyHeld && captured_count > 0) {
+			keyHeld = true;
+			
+			captured_count --;
+			int enemyID = captured_enemies_index[captured_count];
+			int type = captured_enemies_type[captured_count];
+			
+			float vacuum_start_x, vacuum_start_y;
+			if (vacuum_x == 1) { //aiming right
+	vacuum_start_x = player_x + PlayerWidth; //far right of player png
+			} else if (vacuum_x == -1) { //aiming left
+			vacuum_start_x = player_x; //far left of player sprite
+			} else vacuum_start_x = player_x + PlayerWidth/2; //if aiming up or down, use horizontal center
+			
+			if (vacuum_y == -1) { //aiming up
+			vacuum_start_y = player_y; //top edge
+			} else if (vacuum_y == 1) { //aiming down
+			vacuum_start_y = player_y + PlayerHeight;
+			} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
+			
+			float speed = 15;
+			float velX = 0, velY = 0;
+			
+			if (vacuum_x != 0) { //horizotal shot
+				velX = vacuum_x * speed; //if x 1, vel = 15 and if x -1 then vel = -15
+				velY = vacuum_y = speed/2; //no vertical movment
+				}
+			else if (vacuum_y != 0) { //vertical shot
+				velX = 0; //no horizontal movemtn
+				velY = vacuum_y * speed; //if y is 1 vel is 15 and y is -1 vel is -15
+				}
+				
+			if (type==0) { //if ghost
+				Ghost_x[enemyID] = (int)vacuum_start_x; //brings ghost to tip of vacuum
+				Ghost_y[enemyID] = (int)vacuum_start_y;
+				GhostShotVelX[enemyID] = velX;
+				GhostShotVelY[enemyID] = velY;
+				}
+			else if (type == 1) { // if skelly
+				skeleton_x[enemyID] = (int)vacuum_start_x;
+				skeleton_y[enemyID] = (int)vacuum_start_y;
+				SkeletonShotVelX[enemyID] = velX;
+				SkeletonShotVelY[enemyID] = velY;
+				}
+			else if (type == 2) { // if invisman
+				invisibleMan_x[enemyID] = (int)vacuum_start_x;
+				invisibleMan_y[enemyID] = (int)vacuum_start_y;
+				InvisibleManShotVelX[enemyID] = velX;
+				InvisibleManShotVelY[enemyID] = velY;
+				}
+			}
+		}
+	else keyHeld = false;
+
 }
