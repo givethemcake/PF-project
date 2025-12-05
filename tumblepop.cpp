@@ -809,13 +809,13 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 	
 	int grid_y=static_cast<int>(player_y+PlayerHeight/2)/cell_size;  
     	
-		int top_mid_up1;		
-		int top_mid_up2;
+		char top_mid_up1;		
+		char top_mid_up2;
 		//int top_mid_up=lvl[(static_cast<int>(player_y-cell_size)/cell_size)][static_cast<int>(player_x+PlayerWidth/2)/cell_size];
-		int top_left_up1,top_right_up1,top_left_up2,top_right_up2;
+		char top_left_up1,top_right_up1,top_left_up2,top_right_up2;
 
-		int bottom_mid1;
-		int botttom_mid2;
+		char bottom_mid1;
+		char botttom_mid2;
 
 
 
