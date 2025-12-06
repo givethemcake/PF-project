@@ -35,11 +35,10 @@ void power_display(int power_x, int power_y, Texture& texpower, Sprite& power,in
 bool power_up(int power_x, int power_y, float player_x, float player_y, int playerWidth, int playerHeight,bool& powerPlaced,int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width,int &prevlife);
 
 bool remove_power(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width);
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[]);
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies);
 
 void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovIdle[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[]);
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies);
 
 void floatingGhost(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[]);
 
@@ -502,7 +501,7 @@ int main()
 		
 		
 		
-		level=2; // changed level for testing
+		level=1; // changed level for testing
 		if(level==1){
 			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
@@ -531,7 +530,7 @@ int main()
 						blockSprite.setTexture(blockTexture);
 
 
-						bgTex.loadFromFile("Data/cyberpunk.jpeg");
+						bgTex.loadFromFile("Data/volcanic.jpeg");
 						bgSprite.setTexture(bgTex);
 
 						float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
@@ -597,35 +596,70 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	
 	
 	if (GhostShotVelX[i] != 0 || GhostShotVelY[i] != 0) { //movement for shot
+	
 		int next_x = Ghost_x[i] + (int)GhostShotVelX[i]; //x movemnet
-		int gridX = Ghost_x[i] / cell_size;
+		
+		int gridX = next_x / cell_size; //coords
 		int gridY = Ghost_y[i] / cell_size;
 		
 		
-		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) { //if left or right border, or hitting a platform, or going out
-		GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
-		GhostBounceCount[i]++;
+		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) 
+		{ //if left or right border or hitting a platform
+			GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
+			GhostBounceCount[i]++;
 		}
 		else Ghost_x[i] = next_x;
-		} 
 		
+		//y movement
+		GhostShotVelY[i] += 1; //gravity is 1, too annoying to pass in fn
+		if (GhostShotVelY[i] > 20) 
+			GhostShotVelY[i] = 20; //terminal velocity clamp
 		
+		int next_y = Ghost_y[i] + (int)GhostShotVelY[i];
+		gridX = Ghost_x[i] / cell_size; //uses updated x position
+		gridY = next_y / cell_size;
 		
+		if (next_y <= 0 || next_y >= (height - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#'))
+		{ //if hit top and bottom border or platforms
+			if (GhostShotVelY[i] > 0) { //if moving down
+				GhostShotVelY[i] = 0; //stop falling
+				if (gridY < height) 
+					Ghost_y[i] = (gridY - 1) * cell_size;
+				if (GhostShotVelX[i] == 0) {//if fell striagght down choose random directin t roll to
+					if (rand() % 2 == 0)
+						GhostShotVelX[i] = 10; //right
+					else GhostShotVelX[i] = -10; //left
+					}
+				}
+				
+			else if (GhostShotVelY[i] < 0) { //moving up
+				GhostShotVelY[i] = 0;
+				if (GhostShotVelX[i] == 0) { //no vertical movemnt, same random logic
+				if (rand() % 2 == 0)
+						GhostShotVelX[i] = 15; //right
+					else GhostShotVelX[i] = -15; //left
+					}
+				}
+				
+		} //if not hitting platforms
+		else Ghost_y[i] = next_y;
 		
+		if (GhostBounceCount[i] >= 5) {
+			GhostShotVelX[i] = 0;
+			GhostShotVelY[i] = 0;
+			Ghost_x[i] = -1000;
+			Ghost_y[i] = -1000;
+			ActiveEnemies--;
+		}
 		//--- CONTINUE THIS, REPLICATE FOR SKELLY AND INVIS, ADD GRAV ---
 		
-		
-		
+		GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
+		return;
 			
+	}	
 			
-		//Ghost_y[i] += (int)GhostShotVelY[i];
-		//if (Ghost_y[i] <= 0 || Ghost_y[i] >= (height - 1) * cell_size) { //it hits top or bottom border
-		//GhostShotVelY[i] = -GhostShotVelY[i]; //reverse Y
-		//GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
-		//return;
 	
-	
-	
+	//vacuum pulling
 	float vacuum_start_x, vacuum_start_y;
 	
 	if (vacuum_x == 1) { //aiming right
@@ -2763,7 +2797,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 				invisibleManSp[i].setOrigin(0,0);	
 			}
 		}
-		//ensuer enouh frames have passed for random movement change again
+		//ensuer enuf frames have passed for random movement change again
 
 
 	if(FrameCount-FramePosForChange[i]==1200ull)
@@ -2969,12 +3003,12 @@ void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeigh
 			vacuum_start_y = player_y + PlayerHeight;
 			} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
 			
-			float speed = 15;
+			float speed = 18; //was 15, increased
 			float velX = 0, velY = 0;
 			
 			if (vacuum_x != 0) { //horizotal shot
 				velX = vacuum_x * speed; //if x 1, vel = 15 and if x -1 then vel = -15
-				velY = vacuum_y * speed/2; //no vertical movment
+				velY = vacuum_y * speed/2; //
 				}
 			else if (vacuum_y != 0) { //vertical shot
 				velX = 0; //no horizontal movemtn
