@@ -424,7 +424,7 @@ int main()
 		
 		
 		
-		if(lives<=0)//lives check 
+		if(lives<=0 && !FirstRun)//lives check 
 			{
 
 				bgTex.loadFromFile("Data/GameOver.png");
@@ -444,8 +444,10 @@ int main()
 					}
 					if(overclock.getElapsedTime().asSeconds()<=3.0f)
 					continue;
-					menuload=1;
+					
+					
 				cout<<"game over"<<endl;
+				break;
 					
 
 			}
@@ -537,24 +539,27 @@ int main()
 				menuload=0;
 				clockreset=1;//for reset clock of lost agian
 				level=1;
+				FirstRun=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num2))
 			{	clockreset=1;//for reset clock of lost agian
 				menuload=0;
 				level=2;
+				FirstRun=1;
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num3)){
 				clockreset=1;//for reset clock of lost agian
 				menuload=0;
 				level=3;
+				FirstRun=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num4)){
 				clockreset=1;//for reset clock of lost agian
 				menuload=0;
 				level=4;
-				
+				FirstRun=1;
 			}
 			
 
@@ -601,7 +606,27 @@ int main()
 			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
 			reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);
+				if(FirstRun){
+					
+						livesText.setFillColor(Color::Green);
+						ScoreText.setFillColor(Color::Green);
+						capturedText.setFillColor(Color::Green);
+	
 
+						blockTexture.loadFromFile("Data/block1.png");
+						blockSprite.setTexture(blockTexture);
+
+
+						bgTex.loadFromFile("Data/bg.png");
+						bgSprite.setTexture(bgTex);
+
+						float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
+						float scaleY = (height * cell_size) / (float)bgTex.getSize().y;
+						bgSprite.setScale(scaleX, scaleY);
+
+
+						window.draw(bgSprite);
+					}
 
 			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies);
 
@@ -616,9 +641,9 @@ int main()
 
 					if(FirstRun){
 					
-						livesText.setFillColor(Color::Black);
-						ScoreText.setFillColor(Color::Black);
-						capturedText.setFillColor(Color::Black);
+						livesText.setFillColor(Color::Blue);
+						ScoreText.setFillColor(Color::Blue);
+						capturedText.setFillColor(Color::Blue);
 	
 
 						blockTexture.loadFromFile("Data/block2.png");
