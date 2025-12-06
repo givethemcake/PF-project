@@ -36,9 +36,9 @@ bool power_up(int power_x, int power_y, float player_x, float player_y, int play
 
 bool remove_power(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width);
 
-void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovshooting[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[],bool projectileActive[], int projectilePos[][2], RenderWindow& window); 
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies, int skeleton_x[], int skeleton_y[], int skeletonCount, int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, int GhostCount, int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[]);
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies);
+void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovshooting[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[],bool projectileActive[], int projectilePos[][2], RenderWindow& window, int chelnovBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], int skeletonCount, float SkeletonShotVelX[], float SkeletonShotVelY[], int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, float InvisibleManShotVelX[], float InvisibleManShotVelY[]);
 
 void floatingGhost(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[]);
 
@@ -46,21 +46,22 @@ void check_stuck(char** lvl, float& player_x, float& player_y, float& velocityY,
 
 void playermovement(float& player_x, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, Sprite& PlayerSprite, bool& onGround,const float& jumpStrength, int& speed, const float& friction, int& counter, const float& terminal_Velocity_x,int top_mid_up,int PlayerWidth,int cell_size,float& player_y,int PlayerHeight,char **lvl,int height, int& vacuum_x, int& vacuum_y);// handle all ingame movement and collision and gun direction aim
 
-void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies);
+void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, float chelnovShotVelX[], float chelnovShotVelY[], int chelnovBounceCount[]);
 
-void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], float chelnovShotVelX[], float chelnovShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies);
+void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], float chelnovShotVelX[], float chelnovShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, int chelnovBounceCount[]);
 
-void level_three(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies);
+void level_three(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, float chelnovShotVelX[], float chelnovShotVelY[], int chelnovBounceCount[]);
 
 void display_level(RenderWindow& window, char**lvl, Texture& bgTex,Sprite& bgSprite,Texture& blockTexture,Sprite& blockSprite, const int height, const int width, const int cell_size);
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float SkeletonShotVelX[], float SkeletonShotVelY[], int SkeletonBounceCount[], int& ActiveEnemies);
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float SkeletonShotVelX[], float SkeletonShotVelY[], int SkeletonBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[],
+int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, float InvisibleManShotVelX[], float InvisibleManShotVelY[], int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[]);
 
 void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGround, const float& gravity, float& terminal_Velocity, float& player_x, float& player_y, const int cell_size, int& Pheight, int& Pwidth);
 
 void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeight, int& vacuum_x, int& vacuum_y, int maxcap, int vacuum_range, int vacuum_width, int captured_enemies_index[], int& captured_count, int Ghost_x[], int Ghost_y[], int num_ghosts, bool GhostBeingPulled[],bool Firstrun,RenderWindow& window);
 
-void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int InvisibleManBounceCount[], int& ActiveEnemies);
+void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int InvisibleManBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], int skeletonCount, float SkeletonShotVelX[], float SkeletonShotVelY[], int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[]);
 
 void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeight, int vacuum_x, int vacuum_y, int captured_enemies_index[], int captured_enemies_type[], int& captured_count, int Ghost_x[], int Ghost_y[], float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], float SkeletonShotVelX[], float SkeletonShotVelY[], int invisibleMan_x[], int invisibleMan_y[], float InvisibleManShotVelX[], float InvisibleManShotVelY[]);
 
@@ -81,11 +82,13 @@ int main()
 	static bool FirstRun=1;
 	static int lives=3;
 	static int score=0;
-	bool ShowStart=1;
+	bool ShowStart=1;//diplay starting window
 	bool menuload=0;//for menu screen
 	bool pause=0;
+	bool playerload=0;
+	int player;// 1 for green and two for yellow
 	Clock overclock;
-	bool clockreset=1;
+	bool clockreset=1;//for wat in game over
 
 
 
@@ -166,15 +169,17 @@ int main()
 	int maxcap = 3;
 	int vacuum_range = 200;
 	int vacuum_width = 50;
-	
+	if(player==2)//yellow tumble poper power bonus
+	{
+		vacuum_range=static_cast<float>(vacuum_range)*1.2;
+		vacuum_width=static_cast<float>(vacuum_range)*1.2;
+	}
 	//all enemy arrays
 	const int skeletonCount=4;
 	const int GhostCount=8;
 	const int invisibleManCount=3;
 	const int chelnovCount = 4; 
     
-	float chelnovShotVelX[chelnovCount] = {0};
-    float chelnovShotVelY[chelnovCount] = {0};
 	float GhostShotVelX[GhostCount] = {0}; //for gun shoot projectile speed
 	float GhostShotVelY[GhostCount] = {0};
 	int GhostBounceCount[GhostCount] = {0};
@@ -186,6 +191,10 @@ int main()
 	float InvisibleManShotVelX[invisibleManCount] = {0};
 	float InvisibleManShotVelY[invisibleManCount] = {0};
 	int InvisibleManBounceCount[invisibleManCount] = {0};
+	
+	float chelnovShotVelX[chelnovCount] = {0};
+	float chelnovShotVelY[chelnovCount] = {0};
+	int chelnovBounceCount[chelnovCount] = {0};
 	
 	int captured_enemies_index[5] = {0}; 
 	int captured_enemies_type[5] = {0};
@@ -202,8 +211,9 @@ int main()
 	Sprite bgSprite;
 	Texture blockTexture;
 	Sprite blockSprite;
-
-
+	// menu texture and sprite
+	Texture menutex;
+	Sprite menupage;
 	
 	bgTex.loadFromFile("Data/bg.png");
 	bgSprite.setTexture(bgTex);
@@ -232,8 +242,10 @@ int main()
 	float player_y = 150;
 	int frarmeWidth=64;
 	int frameHeight=64;
-
+	
 	int speed=5;
+	if(player==1)
+	speed=static_cast<float>(speed)*1.5;
 	float velocityX=1;
 	float terminal_Velocity_x=5;
 	float friction=0.8;
@@ -357,21 +369,15 @@ int main()
 	//dynamtest(window);
 	
 	while (window.isOpen())
-	{
+	{			
 
-
-
-		//presing esc so to exit any time
+				//presing escape to close
 		if (Keyboard::isKeyPressed(Keyboard::Escape))
 		{
 			window.close();
 		}
 				Sprite startSprite;
-				Texture startTex;
-				Sprite menupage;
-				Texture menutex;
-				
-				Event event;
+				Texture startTex;Event event;
 			while(window.pollEvent(event)) {
     		if(event.type == Event::KeyPressed) {
         		if(event.key.code == Keyboard::P)
@@ -402,8 +408,46 @@ int main()
 				
 			
 			}
+			
 
-			if(menuload){
+
+
+
+			if(playerload)
+			{	Texture selecttex;
+				Sprite selectsp;
+				selecttex.loadFromFile("Data/selection.png");
+				selectsp.setTexture(selecttex);
+				selectsp.setPosition(0,0);
+
+				float scaleX = (width * cell_size) / (float)selecttex.getSize().x;
+				float scaleY = (height * cell_size) / (float)selecttex.getSize().y;
+				selectsp.setScale(scaleX, scaleY);
+
+				window.draw(selectsp);
+				window.display();
+
+				
+				if(Keyboard::isKeyPressed(Keyboard::Num2))
+				{
+					player =2;
+					playerload=0;
+				}
+				else if(Keyboard::isKeyPressed(Keyboard::Num1))
+				{
+					player =1;
+					playerload=0;
+				}
+				else continue;
+				
+
+			}
+
+
+
+
+
+			if(menuload){ // module to load menu 
 				menutex.loadFromFile("Data/menu-min.png");
 				menupage.setTexture(menutex);
 				menupage.setPosition(0,0);
@@ -420,7 +464,7 @@ int main()
 		
 		
 		
-		if(lives<=0 && !FirstRun)//lives check 
+		if(lives<=0)//lives check 
 			{
 
 				bgTex.loadFromFile("Data/GameOver.png");
@@ -434,17 +478,19 @@ int main()
 				window.draw(bgSprite);
 				window.display();
 
-				if(clockreset)// avoid restarting agian again
-					{overclock.restart();
-						clockreset=0;
+				if(clockreset)
+				{
+					overclock.restart();
+					clockreset=0;
+				}
+					if(overclock.getElapsedTime().asSeconds()<=3)
+					{
+						continue;
 					}
-					if(overclock.getElapsedTime().asSeconds()<=3.0f)
-					continue;
-					
-					
+				
+
 				cout<<"game over"<<endl;
-				break;
-					
+					break;
 
 			}
 
@@ -490,7 +536,6 @@ int main()
 			if(Keyboard::isKeyPressed(Keyboard::Space)){
 				ShowStart=0;
 				menuload=1;
-				
 			}
 			continue;
 
@@ -536,6 +581,7 @@ int main()
 				clockreset=1;//for reset clock of lost agian
 				level=1;
 				FirstRun=1;
+				playerload=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num2))
@@ -543,12 +589,14 @@ int main()
 				menuload=0;
 				level=2;
 				FirstRun=1;
+				playerload=1;
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num3)){
 				clockreset=1;//for reset clock of lost agian
 				menuload=0;
 				level=3;
 				FirstRun=1;
+				playerload=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num4)){
@@ -556,6 +604,7 @@ int main()
 				menuload=0;
 				level=4;
 				FirstRun=1;
+				playerload=1;
 			}
 			
 
@@ -598,33 +647,14 @@ int main()
 		
 		
 		//level=1; // changed level for testing
+		//level=1; // changed level for testing
 		if(level==1){
 			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
 			reload(player_x, player_y, PlayerSprite, cell_size, height, PlayerHeight, FirstRun);
-				if(FirstRun){
-					
-						livesText.setFillColor(Color::Green);
-						ScoreText.setFillColor(Color::Green);
-						capturedText.setFillColor(Color::Green);
-	
-
-						blockTexture.loadFromFile("Data/block1.png");
-						blockSprite.setTexture(blockTexture);
 
 
-						bgTex.loadFromFile("Data/bg.png");
-						bgSprite.setTexture(bgTex);
-
-						float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
-						float scaleY = (height * cell_size) / (float)bgTex.getSize().y;
-						bgSprite.setScale(scaleX, scaleY);
-
-
-						window.draw(bgSprite);
-					}
-
-			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies);
+			level_one(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies, chelnovShotVelX, chelnovShotVelY, chelnovBounceCount);
 
 
 
@@ -645,13 +675,16 @@ int main()
 						livesText.setFillColor(Color::Black);
 						ScoreText.setFillColor(Color::Black);
 						capturedText.setFillColor(Color::Black);
+						livesText.setFillColor(Color::Black);
+						ScoreText.setFillColor(Color::Black);
+						capturedText.setFillColor(Color::Black);
 	
 
 						blockTexture.loadFromFile("Data/block2.png");
 						blockSprite.setTexture(blockTexture);
 
 
-						bgTex.loadFromFile("Data/cyberpunk.jpeg");
+						bgTex.loadFromFile("Data/volcanic.jpeg");
 						bgSprite.setTexture(bgTex);
 
 						float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
@@ -665,7 +698,7 @@ int main()
 			
 
 
-					level_two(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength, speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, chelnovShotVelX, chelnovShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies);			
+					level_two(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength, speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, chelnovShotVelX, chelnovShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies, chelnovBounceCount);			
 				}
 			
 
@@ -676,7 +709,7 @@ int main()
 					}
 					
 					
-					level_three(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies);      
+					level_three(lvl, height, width, FirstRun, player_x, player_y, PlayerSprite, cell_size, PlayerHeight, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, window, velocityY, isJumping, velocityX, PlayerTexture, onGround, jumpStrength,   speed, friction, counter, terminal_Velocity_x, top_mid_up, vacuum_range, vacuum_width, captured_enemies_type, GhostShotVelX, GhostShotVelY, SkeletonShotVelX, SkeletonShotVelY, InvisibleManShotVelX, InvisibleManShotVelY, GhostBounceCount, SkeletonBounceCount, InvisibleManBounceCount, ActiveEnemies, chelnovShotVelX, chelnovShotVelY, chelnovBounceCount);      
 				}
 		
 		
@@ -710,7 +743,7 @@ int main()
 
 
 
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies)
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies, int skeleton_x[], int skeleton_y[], int skeletonCount, int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, int GhostCount, int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[])
 {
 
 	static int Frame=5;	
@@ -718,35 +751,133 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	
 	
 	if (GhostShotVelX[i] != 0 || GhostShotVelY[i] != 0) { //movement for shot
+	
 		int next_x = Ghost_x[i] + (int)GhostShotVelX[i]; //x movemnet
-		int gridX = Ghost_x[i] / cell_size;
+		
+		int gridX = next_x / cell_size; //coords
 		int gridY = Ghost_y[i] / cell_size;
 		
 		
-		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) { //if left or right border, or hitting a platform, or going out
-		GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
-		GhostBounceCount[i]++;
+		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) 
+		{ //if left or right border or hitting a platform
+			GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
+			GhostBounceCount[i]++;
 		}
 		else Ghost_x[i] = next_x;
-		} 
 		
+		//y movement
+		GhostShotVelY[i] += 1; //gravity is 1, too annoying to pass in fn
+		if (GhostShotVelY[i] > 20) 
+			GhostShotVelY[i] = 20; //terminal velocity clamp
 		
+		int next_y = Ghost_y[i] + (int)GhostShotVelY[i];
+		gridX = Ghost_x[i] / cell_size; //uses updated x position
+		gridY = next_y / cell_size;
 		
+		if (next_y <= 0 || next_y >= (height - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#'))
+		{ //if hit top and bottom border or platforms
+			if (GhostShotVelY[i] > 0) { //if moving down
+				GhostShotVelY[i] = 0; //stop falling
+				if (gridY < height) 
+					Ghost_y[i] = (gridY - 1) * cell_size;
+				if (GhostShotVelX[i] == 0) {//if fell striagght down choose random directin t roll to
+					if (rand() % 2 == 0)
+						GhostShotVelX[i] = 15; //right
+					else GhostShotVelX[i] = -15; //left
+					}
+				}
+				
+			else if (GhostShotVelY[i] < 0) { //moving up
+				GhostShotVelY[i] = 0;
+				if (GhostShotVelX[i] == 0) { //no vertical movemnt, same random logic
+				if (rand() % 2 == 0)
+						GhostShotVelX[i] = 15; //right
+					else GhostShotVelX[i] = -15; //left
+					}
+				}
+				
+		} //if not hitting platforms
+		else Ghost_y[i] = next_y;
 		
+		if (GhostBounceCount[i] >= 5) {
+			GhostShotVelX[i] = 0;
+			GhostShotVelY[i] = 0;
+			Ghost_x[i] = -1000;
+			Ghost_y[i] = -1000;
+			ActiveEnemies--;
+		}
 		//--- CONTINUE THIS, REPLICATE FOR SKELLY AND INVIS, ADD GRAV ---
 		
+		int ghost_size = 64;
+		for (int j = 0; j < GhostCount; j++) {
+			if(j!=i && Ghost_x[j] > 0) { //doesnt check itself and off screen ghosts
+				if (!(Ghost_x[i] < Ghost_x[j] - ghost_size || Ghost_x[i] > Ghost_x[j] + ghost_size) && !(Ghost_y[i] < Ghost_y[j] - ghost_size || Ghost_y[i] > Ghost_y[j] + ghost_size)) { //collision with other ghost
+					Ghost_x[i] = -1000; //both die
+					Ghost_y[i] = -1000;
+					GhostShotVelX[i] = 0;
+					GhostShotVelY[i] = 0;
+					Ghost_x[j] = -1000;
+					Ghost_y[j] = -1000;
+					
+					ActiveEnemies --;
+				}
+			}
+		}
 		
+		//now collision with skeletons
+		for (int j = 0; j < skeletonCount; j++) {
+			if (skeleton_x[j] > 0) { //on screen
+				if (!(Ghost_x[i] < skeleton_x[j] - ghost_size || Ghost_x[i] > skeleton_x[j] + ghost_size) && !(Ghost_y[i] < skeleton_y[j] - ghost_size || Ghost_y[i] > skeleton_y[j] + ghost_size)) {
+					skeleton_x[j] = -1000;
+					skeleton_y[j] = -1000;
+					Ghost_x[i] = -1000; //both die
+					Ghost_y[i] = -1000;
+					GhostShotVelX[i] = 0;
+					GhostShotVelY[i] = 0;
+					ActiveEnemies --;
+				}
+			}
+		}
 		
+		//invisman collision
+		for (int j = 0; j < invisibleManCount; j++) {
+			if (invisibleMan_x[j] > 0) {
+				if (!(Ghost_x[i] < invisibleMan_x[j] - ghost_size || Ghost_x[i] > invisibleMan_x[j] + ghost_size) && !(Ghost_y[i] < invisibleMan_y[j] - ghost_size || Ghost_y[i] > invisibleMan_y[j] + ghost_size)) {
+					invisibleMan_x[j] = -1000;
+					invisibleMan_y[j] = -1000;
+					Ghost_x[i] = -1000; //both die
+					Ghost_y[i] = -1000;
+					GhostShotVelX[i] = 0;
+					GhostShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		//chelnov collision
+		for (int j = 0; j < chelnovCount; j++) {
+			if (chelnov_x[j] > 0) {
+				if (!(Ghost_x[i] < chelnov_x[j] - ghost_size || Ghost_x[i] > chelnov_x[j] + ghost_size) && !(Ghost_y[i] < chelnov_y[j] - ghost_size || Ghost_y[i] > chelnov_y[j] + ghost_size)) {
+					chelnov_x[j] = -1000;
+					chelnov_y[j] = -1000;
+					Ghost_x[i] = -1000;
+					Ghost_y[i] = -1000;
+					GhostShotVelX[i] = 0;
+					GhostShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
+		return;
 			
+	}	
 			
-		//Ghost_y[i] += (int)GhostShotVelY[i];
-		//if (Ghost_y[i] <= 0 || Ghost_y[i] >= (height - 1) * cell_size) { //it hits top or bottom border
-		//GhostShotVelY[i] = -GhostShotVelY[i]; //reverse Y
-		//GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
-		//return;
 	
 	
 	
+	//vacuum pulling
 	float vacuum_start_x, vacuum_start_y;
 	
 	if (vacuum_x == 1) { //aiming right
@@ -1300,7 +1431,7 @@ void playermovement(float& player_x, float& velocityY, bool& isJumping, float& v
 }
 
 
-void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies) {
+void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, float chelnovShotVelX[], float chelnovShotVelY[], int chelnovBounceCount[]) {
 
 	//declare the border
 
@@ -1344,6 +1475,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	const int skeletonCount=4;
 	const int GhostCount=8;
 	const int invisibleManCount=3;
+	const int chelnovCount = 4;
 	
 	static Sprite GhostSp[GhostCount];
 	static Texture GhostTx;
@@ -1357,6 +1489,11 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 	
 	static int invisibleMan_x[invisibleManCount];
 	static int invisibleMan_y[invisibleManCount];
+	
+	static int chelnov_x[chelnovCount];
+	static int chelnov_y[chelnovCount];
+	
+	
 	
 	
 	static int currentSkeleton=0;
@@ -1508,12 +1645,12 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 
 	//moving enemies
 	for(int i=0;i<GhostCount;i++){
-	  ghostMove(Ghost_x, Ghost_y, width, GhostSp, GhostMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, GhostBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, captured_enemies_type, GhostShotVelX, GhostShotVelY, GhostBounceCount, ActiveEnemies);
+	  ghostMove(Ghost_x, Ghost_y, width, GhostSp, GhostMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, GhostBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, lives, captured_enemies_type, GhostShotVelX, GhostShotVelY, GhostBounceCount, ActiveEnemies, skeleton_x, skeleton_y, skeletonCount, invisibleMan_x, invisibleMan_y, invisibleManCount, GhostCount, chelnov_x, chelnov_y, chelnovCount, chelnovShotVelX, chelnovShotVelY);
 	}
 
 	for(int i=0;i<skeletonCount;i++)
 	{
- skeletonMove(skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle, lives,  skeletonCount,  currentSkeleton,  posChangeHappened, FramePosForChange, FirstRun,skeletonJumping,jumpCoolDown, SkeletonBeingPulled,captured_enemies_index, captured_count, PlayerWidth,vacuum_x, vacuum_y, maxcap, captured_enemies_type, SkeletonShotVelX, SkeletonShotVelY, SkeletonBounceCount, ActiveEnemies);
+ skeletonMove(skeleton_x, skeleton_y, width, skeletonSp, skeletonMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size, PlayerHeight, height,skeletonIdle, lives,  skeletonCount,  currentSkeleton,  posChangeHappened, FramePosForChange, FirstRun,skeletonJumping,jumpCoolDown, SkeletonBeingPulled,captured_enemies_index, captured_count, PlayerWidth,vacuum_x, vacuum_y, maxcap, captured_enemies_type, SkeletonShotVelX, SkeletonShotVelY, SkeletonBounceCount, ActiveEnemies, Ghost_x, Ghost_y, GhostCount, GhostShotVelX, GhostShotVelY, invisibleMan_x, invisibleMan_y, invisibleManCount, InvisibleManShotVelX, InvisibleManShotVelY, chelnov_x, chelnov_y, chelnovCount, chelnovShotVelX, chelnovShotVelY);
 
 
 
@@ -1542,7 +1679,7 @@ void level_one(char**lvl, int height, int width, bool& FirstRun, float& player_x
 }
 
 
-void level_two(char** lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y, Sprite& PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap, int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction, int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], float chelnovShotVelX[], float chelnovShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies)
+void level_two(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], float chelnovShotVelX[], float chelnovShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, int chelnovBounceCount[])
 {
     if (FirstRun) {
 
@@ -1775,14 +1912,19 @@ void level_two(char** lvl, int height, int width, bool& FirstRun, float& player_
     vacuum_suck(player_x, player_y, PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range, vacuum_width, captured_enemies_index, captured_count, invisibleMan_x, invisibleMan_y, 4, invisibleManBeingPulled, FirstRun, window); //ran for skeleton pull, 4 skellies
 
 
-    for (int i = 0; i < invisibleManCount; i++) {
-        invisibleManMove(invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, invisibleManIdle, lives, invisibleManCount, currentInvibleMan, posChangeHappenedInvisible, FramePosForChangeInvisible, FirstRun, invisibleManJumping, jumpCoolDownInvisible, invisibleManBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, captured_enemies_type, InvisibleManShotVelX, InvisibleManShotVelY, InvisibleManBounceCount, ActiveEnemies);
+    // for (int i = 0; i < invisibleManCount; i++) {
+    //     invisibleManMove(invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, invisibleManIdle, lives, invisibleManCount, currentInvibleMan, posChangeHappenedInvisible, FramePosForChangeInvisible, FirstRun, invisibleManJumping, jumpCoolDownInvisible, invisibleManBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, captured_enemies_type, InvisibleManShotVelX, InvisibleManShotVelY, InvisibleManBounceCount, ActiveEnemies);
+
+
+
+	for(int i=0;i<invisibleManCount;i++){
+		invisibleManMove( invisibleMan_x, invisibleMan_y, width, invisibleManSp, invisibleManMovingLeft, i, player_x, player_y,lvl,PlayerSprite, cell_size,PlayerHeight, height, invisibleManIdle, lives, invisibleManCount,  currentInvibleMan,  posChangeHappenedInvisible,  FramePosForChangeInvisible, FirstRun, invisibleManJumping, jumpCoolDownInvisible, invisibleManBeingPulled,  captured_enemies_index,  captured_count,  PlayerWidth,  vacuum_x,  vacuum_y,  maxcap, captured_enemies_type, InvisibleManShotVelX, InvisibleManShotVelY, InvisibleManBounceCount, ActiveEnemies, Ghost_x, Ghost_y, GhostCount, GhostShotVelX, GhostShotVelY, skeleton_x, skeleton_y, skeletonCount, SkeletonShotVelX, SkeletonShotVelY, chelnov_x, chelnov_y, chelnovCount, chelnovShotVelX, chelnovShotVelY);	 
 
     }
 
 
     for (int i = 0; i < chelnovCount; i++) {
-        chelnovMove(chelnov_x, chelnov_y, width, chelnovSp, chelnovMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, chelnovIdle, lives, chelnovCount, currentchelnov, posChangeHappenedChelnov, FramePosForChangeChelnov, FirstRun, chelnovJumping, jumpCoolDownChelnov, chelnovBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, captured_enemies_type, chelnovShotVelX, chelnovShotVelY, projectileActice, projectilePos, window);
+        chelnovMove(chelnov_x, chelnov_y, width, chelnovSp, chelnovMovingLeft, i, player_x, player_y, lvl, PlayerSprite, cell_size, PlayerHeight, height, chelnovIdle, lives, chelnovCount, currentchelnov, posChangeHappenedChelnov, FramePosForChangeChelnov, FirstRun, chelnovJumping, jumpCoolDownChelnov, chelnovBeingPulled, captured_enemies_index, captured_count, PlayerWidth, vacuum_x, vacuum_y, maxcap, captured_enemies_type, chelnovShotVelX, chelnovShotVelY, projectileActice, projectilePos, window, chelnovBounceCount, ActiveEnemies, Ghost_x, Ghost_y, GhostCount, GhostShotVelX, GhostShotVelY, skeleton_x, skeleton_y, skeletonCount, SkeletonShotVelX, SkeletonShotVelY, invisibleMan_x, invisibleMan_y, invisibleManCount, InvisibleManShotVelX, InvisibleManShotVelY);
     }
 
 
@@ -1800,7 +1942,7 @@ void level_two(char** lvl, int height, int width, bool& FirstRun, float& player_
 
 
 
-void level_three(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies)
+void level_three(char**lvl, int height, int width, bool& FirstRun, float& player_x, float& player_y,Sprite &PlayerSprite, int cell_size, int PlayerHeight, int captured_enemies_index[], int& captured_count, int PlayerWidth, int& vacuum_x, int& vacuum_y, int maxcap,  int& lives, RenderWindow& window, float& velocityY, bool& isJumping, float& velocityX, Texture& PlayerTexture, bool& onGround, const float& jumpStrength, int& speed, const float& friction,  int& counter, const float& terminal_Velocity_x, int top_mid_up, int vacuum_range, int vacuum_width, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], float SkeletonShotVelX[], float SkeletonShotVelY[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int GhostBounceCount[], int SkeletonBounceCount[], int InvisibleManBounceCount[], int& ActiveEnemies, float chelnovShotVelX[], float chelnovShotVelY[], int chelnovBounceCount[])
 {	// Planned to make it extra hard but left some room for player to breath
 	// level design
 
@@ -1959,16 +2101,18 @@ void player_gravity(char** lvl, float& offset_y, float& velocityY, bool& onGroun
 	
 }
 
-void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float SkeletonShotVelX[], float SkeletonShotVelY[], int SkeletonBounceCount[], int& ActiveEnemies)
+void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[],bool skeletonMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool skeletonIdle[],int & lives,const int skeletonCount, int currentSkeleton, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool skeletonJumping[],int jumpCoolDown[], bool SkeletonBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float SkeletonShotVelX[], float SkeletonShotVelY[], int SkeletonBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[],
+int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, float InvisibleManShotVelX[], float InvisibleManShotVelY[], int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[])
 {
 	
     static int Frame=192;    //has to be at start or scope errors l8r
     static bool jumpingUp=0;
     static int FrameCount=0;
+    
     int grid_x_skeleton=skeleton_x[i]/64;
     int grid_y_skeleton=(skeleton_y[i]+45)/64;
     if((skeleton_y[i]+45)<height)
-    grid_y_skeleton=(skeleton_y[i]+45)/64;
+    	grid_y_skeleton=(skeleton_y[i]+45)/64;
     static int currentIdleFrame[3]={0};
     int IdleFramepos[3]={59,111,149};
     static int Jumping_x=0,Jumping_y=0;
@@ -1980,23 +2124,134 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 	
 
 
-	if (SkeletonShotVelX[i] != 0 || SkeletonShotVelY[i] != 0) { //if being shot
-		skeleton_x[i] += (int)SkeletonShotVelX[i];
-		skeleton_y[i] += (int)SkeletonShotVelY[i];
-		if (skeleton_x[i] <= 0 || skeleton_x[i] >= (width-1)*cell_size) {
-			SkeletonShotVelX[i] = -SkeletonShotVelX[i]; //if hitting left or right, switch X direciton
-			}
-		if (skeleton_y[i] <= 0 || skeleton_y[i] >= (height-1)*cell_size) {
-			SkeletonShotVelY[i] = -SkeletonShotVelY[i]; //if hitting up or down, siwtch y direction
+	if (SkeletonShotVelX[i] != 0 || SkeletonShotVelY[i] != 0) { //movement for shot
+	
+		int next_x = skeleton_x[i] + (int)SkeletonShotVelX[i]; //x movemnet
+		
+		int gridX = next_x / cell_size; //coords
+		int gridY = skeleton_y[i] / cell_size;
+		
+		
+		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) 
+		{ //if left or right border or hitting a platform
+			SkeletonShotVelX[i] = -SkeletonShotVelX[i]; //reverse X direction, bounce
+			SkeletonBounceCount[i]++;
+		}
+		else skeleton_x[i] = next_x;
+		
+		//y movement
+		SkeletonShotVelY[i] += 1; //gravity is 1, too annoying to pass in fn
+		if (SkeletonShotVelY[i] > 20) 
+			SkeletonShotVelY[i] = 20; //terminal velocity clamp
+		
+		int next_y = skeleton_y[i] + (int)SkeletonShotVelY[i];
+		gridX = skeleton_x[i] / cell_size; //uses updated x position
+		gridY = next_y / cell_size;
+		
+		if (next_y <= 0 || next_y >= (height - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#'))
+		{ //if hit top and bottom border or platforms
+			if (SkeletonShotVelY[i] > 0) { //if moving down
+				SkeletonShotVelY[i] = 0; //stop falling
+				if (gridY < height) 
+					skeleton_y[i] = (gridY - 1) * cell_size;
+				if (SkeletonShotVelX[i] == 0) {//if fell striagght down choose random directin t roll to
+					if (rand() % 2 == 0)
+						SkeletonShotVelX[i] = 15; //right
+					else SkeletonShotVelX[i] = -15; //left
+					}
+				}
+				
+			else if (SkeletonShotVelY[i] < 0) { //moving up
+				SkeletonShotVelY[i] = 0;
+				if (SkeletonShotVelX[i] == 0) { //no vertical movemnt, same random logic
+				if (rand() % 2 == 0)
+						SkeletonShotVelX[i] = 15; //right
+					else SkeletonShotVelX[i] = -15; //left
+					}
+				}
+				
+		} //if not hitting platforms
+		else skeleton_y[i] = next_y;
+		
+		if (SkeletonBounceCount[i] >= 5) {
+			SkeletonShotVelX[i] = 0;
+			SkeletonShotVelY[i] = 0;
+			skeleton_x[i] = -1000;
+			skeleton_y[i] = -1000;
+			ActiveEnemies--;
+		}
+		
+		int skeleton_size = 64;
+		for (int j = 0; j < GhostCount; j++) {
+			if (Ghost_x[j] > 0) { //doesnt check off screen ghosts
+				if (!(skeleton_x[i] < Ghost_x[j] - skeleton_size || skeleton_x[i] > Ghost_x[j] + skeleton_size) && !(skeleton_y[i] < Ghost_y[j] - skeleton_size || skeleton_y[i] > Ghost_y[j] + skeleton_size)) {
+					Ghost_x[j] = -1000; //both die
+					Ghost_y[j] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					skeleton_x[i] = -1000;
+					skeleton_y[i] = -1000;
+					
+					ActiveEnemies --;
+				}
 			}
 		}
+		
+		//now collision with other skeletons
+		for (int j = 0; j < skeletonCount; j++) {
+			if (j!= i && skeleton_x[j] > 0) { //on screen
+				if (!(skeleton_x[i] < skeleton_x[j] - skeleton_size || skeleton_x[i] > skeleton_x[j] + skeleton_size) && !(skeleton_y[i] < skeleton_y[j] - skeleton_size || skeleton_y[i] > skeleton_y[j] + skeleton_size)) {
+					skeleton_x[j] = -1000;
+					skeleton_y[j] = -1000;
+					skeleton_x[i] = -1000; //both die
+					skeleton_y[i] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					ActiveEnemies --;
+				}
+			}
+		}
+		
+		//invisman collision
+		for (int j = 0; j < invisibleManCount; j++) {
+			if (invisibleMan_x[j] > 0) {
+				if (!(skeleton_x[i] < invisibleMan_x[j] - skeleton_size || skeleton_x[i] > invisibleMan_x[j] + skeleton_size) && !(skeleton_y[i] < invisibleMan_y[j] - skeleton_size || skeleton_y[i] > invisibleMan_y[j] + skeleton_size)) {
+					invisibleMan_x[j] = -1000;
+					invisibleMan_y[j] = -1000;
+					skeleton_x[i] = -1000; //both die
+					skeleton_y[i] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		//chelnov collision
+		for (int j = 0; j < chelnovCount; j++) {
+			if (chelnov_x[j] > 0) {
+				if (!(skeleton_x[i] < chelnov_x[j] - skeleton_size || skeleton_x[i] > chelnov_x[j] + skeleton_size) && !(skeleton_y[i] < chelnov_y[j] - skeleton_size || skeleton_y[i] > chelnov_y[j] + skeleton_size)) {
+					chelnov_x[j] = -1000;
+					chelnov_y[j] = -1000;
+					skeleton_x[i] = -1000;
+					skeleton_y[i] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		
+		skeletonSp[i].setPosition(skeleton_x[i], skeleton_y[i]);
+		return;
+			
+	}
+		
 	
 	
 	
 	
-	
-	
-		if (skeleton_x[i] > 0) { //only runs if on screen
 	
 	
     
@@ -2036,13 +2291,13 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
         if (dx > pullspeed) { //target to the left
             skeleton_x[i] += pullspeed;
         } else if (dx < -pullspeed) { //target to the right
-            skeleton_x[i] -= pullspeed;
-        } else skeleton_x[i] = vacuum_start_x; //snaps the target to the vacuum to prevent it moving past
+        skeleton_x[i] -= pullspeed;
+        } else skeleton_x[i] = vacuum_start_x; //snaps to vacuum otherwise it goes past
         
         if (dy > pullspeed) { //target is up
-            skeleton_y[i] += pullspeed;
+        	skeleton_y[i] += pullspeed;
         } else if (dy < -pullspeed) { //target is down
-            skeleton_y[i] -= pullspeed;
+        	skeleton_y[i] -= pullspeed;
         } else skeleton_y[i] = vacuum_start_y; //snaps
 
 		skeletonSp[i].setPosition(skeleton_x[i], skeleton_y[i]);
@@ -2051,7 +2306,9 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
         if (skeleton_x[i] == (int)vacuum_start_x && skeleton_y[i] == (int)vacuum_start_y) { 
             if (captured_count < maxcap) {
                 captured_enemies_index[captured_count] = i;
-                captured_count += 1;
+                captured_enemies_type[captured_count] = 1;
+                captured_count ++;
+                ActiveEnemies--;
                 
                 //reset pull and move ghost off camera
                 SkeletonBeingPulled[i] = false;
@@ -2062,10 +2319,11 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
                 skeletonSp[i].setPosition(skeleton_x[i], skeleton_y[i]); 
                 // --------------------------
             }
-        } 
-    
+        }
+        skeletonSp[i].setPosition(skeleton_x[i], skeleton_y[i]);
+        return; 
     } 
-    else { 
+    else { //normal patrol if not being pulled
     
         if (skeleton_x[i] > 0) { //only runs if on screen
     
@@ -2356,7 +2614,6 @@ void skeletonMove(int skeleton_x[],int skeleton_y[],int width,Sprite skeletonSp[
 
 	}
 }
-}
 	
 
 
@@ -2477,23 +2734,135 @@ void vacuum_suck(float player_x, float player_y, int PlayerWidth, int PlayerHeig
 
 }
 	
-void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int InvisibleManBounceCount[], int& ActiveEnemies)
+void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite invisibleManSp[],bool invisibleManMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height,bool invisibleManIdle[],int & lives,const int invisibleManCount, int currentinvisibleMan, bool posChangeHappened[], int FramePosForChange[],bool& FirstRun,bool invisibleManJumping[],int jumpCoolDown[], bool invisibleManBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float InvisibleManShotVelX[], float InvisibleManShotVelY[], int InvisibleManBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], int skeletonCount, float SkeletonShotVelX[], float SkeletonShotVelY[], int chelnov_x[], int chelnov_y[], int chelnovCount, float chelnovShotVelX[], float chelnovShotVelY[])
 {
 	static int Frame=155;	 //has to be at start or scope errors l8r
 	static bool jumpingUp=0;
 	static int FrameCount=0;
 	
 	
-	if (InvisibleManShotVelX[i] != 0 || InvisibleManShotVelY[i] != 0) { //if being shot
-		invisibleMan_x[i] += (int)InvisibleManShotVelX[i];
-		invisibleMan_y[i] += (int)InvisibleManShotVelY[i];
-		if (invisibleMan_x[i] <= 0 || invisibleMan_x[i] >= (width-1)*cell_size) {
-		InvisibleManShotVelX[i] = -InvisibleManShotVelX[i];
-		} //if hit let or right swtich x direciotn
-		if (invisibleMan_y[i] <= 0 || invisibleMan_y[i] >= (height-1)*cell_size) {
-		InvisibleManShotVelY[i] = -InvisibleManShotVelY[i];		
-		} //if hit up or down swiwtch y direction
-	}
+	if (InvisibleManShotVelX[i] != 0 || InvisibleManShotVelY[i] != 0) { //x movement
+        int next_x = invisibleMan_x[i] + (int)InvisibleManShotVelX[i];
+        int gridX = next_x / cell_size;
+        int gridY = invisibleMan_y[i] / cell_size;
+        
+        if (next_x <= 0 || next_x >= (width-1)*cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) {
+            InvisibleManShotVelX[i] = -InvisibleManShotVelX[i];
+            InvisibleManBounceCount[i]++;
+        }
+        else invisibleMan_x[i] = next_x;
+        
+        //y movemetn
+        InvisibleManShotVelY[i] += 1;
+        if (InvisibleManShotVelY[i] > 20) 
+            InvisibleManShotVelY[i] = 20;
+        
+        int next_y = invisibleMan_y[i] + (int)InvisibleManShotVelY[i];
+        gridX = invisibleMan_x[i] / cell_size;
+        gridY = next_y / cell_size;
+        
+        if (next_y <= 0 || next_y >= (height-1)*cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) {
+            if (InvisibleManShotVelY[i] > 0) {
+                InvisibleManShotVelY[i] = 0;
+                if (gridY < height) 
+                    invisibleMan_y[i] = (gridY - 1) * cell_size;
+                if (InvisibleManShotVelX[i] == 0) {
+                    if (rand() % 2 == 0)
+                        InvisibleManShotVelX[i] = 15;
+                    else InvisibleManShotVelX[i] = -15;
+                }
+            }
+            else if (InvisibleManShotVelY[i] < 0) {
+                InvisibleManShotVelY[i] = 0;
+                if (InvisibleManShotVelX[i] == 0) {
+                    if (rand() % 2 == 0)
+                        InvisibleManShotVelX[i] = 15;
+                    else InvisibleManShotVelX[i] = -15;
+                }
+            }
+        }
+        else invisibleMan_y[i] = next_y;
+        
+        if (InvisibleManBounceCount[i] >= 5) {
+            InvisibleManShotVelX[i] = 0;
+            InvisibleManShotVelY[i] = 0;
+            invisibleMan_x[i] = -1000;
+            invisibleMan_y[i] = -1000;
+            ActiveEnemies--;
+        }
+        
+        //collision
+        int invis_size = 64;
+        
+        //ghosts
+        for (int j = 0; j < GhostCount; j++) {
+            if (Ghost_x[j] > 0) {
+                if (!(invisibleMan_x[i] < Ghost_x[j] - invis_size || invisibleMan_x[i] > Ghost_x[j] + invis_size) && 
+                    !(invisibleMan_y[i] < Ghost_y[j] - invis_size || invisibleMan_y[i] > Ghost_y[j] + invis_size)) {
+                    Ghost_x[j] = -1000;
+                    Ghost_y[j] = -1000;
+                    invisibleMan_x[i] = -1000;
+                    invisibleMan_y[i] = -1000;
+                    InvisibleManShotVelX[i] = 0;
+                    InvisibleManShotVelY[i] = 0;
+                    ActiveEnemies--;
+                }
+            }
+        }
+        
+        //skeletons
+        for (int j = 0; j < skeletonCount; j++) {
+            if (skeleton_x[j] > 0) {
+                if (!(invisibleMan_x[i] < skeleton_x[j] - invis_size || invisibleMan_x[i] > skeleton_x[j] + invis_size) && 
+                    !(invisibleMan_y[i] < skeleton_y[j] - invis_size || invisibleMan_y[i] > skeleton_y[j] + invis_size)) {
+                    skeleton_x[j] = -1000;
+                    skeleton_y[j] = -1000;
+                    invisibleMan_x[i] = -1000;
+                    invisibleMan_y[i] = -1000;
+                    InvisibleManShotVelX[i] = 0;
+                    InvisibleManShotVelY[i] = 0;
+                    ActiveEnemies--;
+                }
+            }
+        }
+        
+        //other invisible mans
+        for (int j = 0; j < invisibleManCount; j++) {
+            if (j != i && invisibleMan_x[j] > 0) {
+                if (!(invisibleMan_x[i] < invisibleMan_x[j] - invis_size || invisibleMan_x[i] > invisibleMan_x[j] + invis_size) && 
+                    !(invisibleMan_y[i] < invisibleMan_y[j] - invis_size || invisibleMan_y[i] > invisibleMan_y[j] + invis_size)) {
+                    invisibleMan_x[j] = -1000;
+                    invisibleMan_y[j] = -1000;
+                    invisibleMan_x[i] = -1000;
+                    invisibleMan_y[i] = -1000;
+                    InvisibleManShotVelX[i] = 0;
+                    InvisibleManShotVelY[i] = 0;
+                    ActiveEnemies--;
+                }
+            }
+        }
+        
+        //chelnov
+        for (int j = 0; j < chelnovCount; j++) {
+            if (chelnov_x[j] > 0) {
+                if (!(invisibleMan_x[i] < chelnov_x[j] - invis_size || invisibleMan_x[i] > chelnov_x[j] + invis_size) && 
+                    !(invisibleMan_y[i] < chelnov_y[j] - invis_size || invisibleMan_y[i] > chelnov_y[j] + invis_size)) {
+                    chelnov_x[j] = -1000;
+                    chelnov_y[j] = -1000;
+                    invisibleMan_x[i] = -1000;
+                    invisibleMan_y[i] = -1000;
+                    InvisibleManShotVelX[i] = 0;
+                    InvisibleManShotVelY[i] = 0;
+                    ActiveEnemies--;
+                }
+            }
+        }
+        
+        invisibleManSp[i].setPosition(invisibleMan_x[i], invisibleMan_y[i]);
+        return;
+    }
+	
+	
 	
 	
 	int grid_x_invisibleMan=invisibleMan_x[i]/64;
@@ -2829,7 +3198,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 				invisibleManSp[i].setOrigin(0,0);	
 			}
 		}
-		//ensuer enouh frames have passed for random movement change again
+		//ensuer enuf frames have passed for random movement change again
 
 
 	if(FrameCount-FramePosForChange[i]==1200ull)
@@ -3035,12 +3404,12 @@ void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeigh
 			vacuum_start_y = player_y + PlayerHeight;
 			} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
 			
-			float speed = 15;
+			float speed = 18; //was 15, increased
 			float velX = 0, velY = 0;
 			
 			if (vacuum_x != 0) { //horizotal shot
 				velX = vacuum_x * speed; //if x 1, vel = 15 and if x -1 then vel = -15
-				velY = vacuum_y * speed/2; //no vertical movment
+				velY = vacuum_y * speed/2; //
 				}
 			else if (vacuum_y != 0) { //vertical shot
 				velX = 0; //no horizontal movemtn
@@ -3074,7 +3443,7 @@ void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeigh
 
 
 
-void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovshooting[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[],bool projectileActive[], int projectilePos[][2], RenderWindow& window) 
+void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovshooting[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[],bool projectileActive[], int projectilePos[][2], RenderWindow& window, int chelnovBounceCount[], int& ActiveEnemies, int Ghost_x[], int Ghost_y[], int GhostCount, float GhostShotVelX[], float GhostShotVelY[], int skeleton_x[], int skeleton_y[], int skeletonCount, float SkeletonShotVelX[], float SkeletonShotVelY[], int invisibleMan_x[], int invisibleMan_y[], int invisibleManCount, float InvisibleManShotVelX[], float InvisibleManShotVelY[]) 
 {
 	
     static int Frame=40;    //has to be at start or scope errors l8r
@@ -3169,17 +3538,129 @@ void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[]
 
 
 
-	if (chelnovShotVelX[i] != 0 || chelnovShotVelY[i] != 0) { //if being shot
-		chelnov_x[i] += static_cast<int>(chelnovShotVelX[i]);
-		chelnov_y[i] += static_cast<int>(chelnovShotVelY[i]);
-		if (chelnov_x[i] <= 0 || chelnov_x[i] >= (width-1)*cell_size) {
-			chelnovShotVelX[i] = -chelnovShotVelX[i]; //if hitting left or right, switch X direction
-			}
-		if (chelnov_y[i] <= 0 || chelnov_y[i] >= (height-1)*cell_size) {
-			chelnovShotVelY[i] = -chelnovShotVelY[i]; //if hitting up or down, switch y direction
+	if (chelnovShotVelX[i] != 0 || chelnovShotVelY[i] != 0) { //movement for shot
+	
+		int next_x = chelnov_x[i] + (int)chelnovShotVelX[i]; //x movemnet
+		
+		int gridX = next_x / cell_size; //coords
+		int gridY = chelnov_y[i] / cell_size;
+		
+		
+		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) 
+		{ //if left or right border or hitting a platform
+			chelnovShotVelX[i] = -chelnovShotVelX[i]; //reverse X direction, bounce
+			chelnovBounceCount[i]++;
+		}
+		else chelnov_x[i] = next_x;
+		
+		//y movement
+		chelnovShotVelY[i] += 1; //gravity is 1, too annoying to pass in fn
+		if (chelnovShotVelY[i] > 20) 
+			chelnovShotVelY[i] = 20; //terminal velocity clamp
+		
+		int next_y = chelnov_y[i] + (int)chelnovShotVelY[i];
+		gridX = chelnov_x[i] / cell_size; //uses updated x position
+		gridY = next_y / cell_size;
+		
+		if (next_y <= 0 || next_y >= (height - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#'))
+		{ //if hit top and bottom border or platforms
+			if (chelnovShotVelY[i] > 0) { //if moving down
+				chelnovShotVelY[i] = 0; //stop falling
+				if (gridY < height) 
+					chelnov_y[i] = (gridY - 1) * cell_size;
+				if (chelnovShotVelX[i] == 0) {//if fell striagght down choose random directin t roll to
+					if (rand() % 2 == 0)
+						chelnovShotVelX[i] = 15; //right
+					else chelnovShotVelX[i] = -15; //left
+					}
+				}
+				
+			else if (chelnovShotVelY[i] < 0) { //moving up
+				chelnovShotVelY[i] = 0;
+				if (chelnovShotVelX[i] == 0) { //no vertical movemnt, same random logic
+				if (rand() % 2 == 0)
+						chelnovShotVelX[i] = 15; //right
+					else chelnovShotVelX[i] = -15; //left
+					}
+				}
+				
+		} //if not hitting platforms
+		else chelnov_y[i] = next_y;
+		
+		if (chelnovBounceCount[i] >= 5) {
+			chelnovShotVelX[i] = 0;
+			chelnovShotVelY[i] = 0;
+			chelnov_x[i] = -1000;
+			chelnov_y[i] = -1000;
+			ActiveEnemies--;
+		}
+		
+		int chelnov_size = 64;
+		for (int j = 0; j < GhostCount; j++) {
+			if(Ghost_x[j] > 0) { //doesnt check off screen ghosts
+				if (!(chelnov_x[i] < Ghost_x[j] - chelnov_size || chelnov_x[i] > Ghost_x[j] + chelnov_size) && !(chelnov_y[i] < Ghost_y[j] - chelnov_size || chelnov_y[i] > Ghost_y[j] + chelnov_size)) {
+					Ghost_x[j] = -1000; //both die
+					Ghost_y[j] = -1000;
+					chelnovShotVelX[i] = 0;
+					chelnovShotVelY[i] = 0;
+					chelnov_x[i] = -1000;
+					chelnov_y[i] = -1000;
+					
+					ActiveEnemies --;
+				}
 			}
 		}
-	
+		
+		//collision with skeletons
+		for (int j = 0; j < skeletonCount; j++) {
+			if (skeleton_x[j] > 0) { //on screen
+				if (!(chelnov_x[i] < skeleton_x[j] - chelnov_size || chelnov_x[i] > skeleton_x[j] + chelnov_size) && !(chelnov_y[i] < skeleton_y[j] - chelnov_size || chelnov_y[i] > skeleton_y[j] + chelnov_size)) {
+					skeleton_x[j] = -1000;
+					skeleton_y[j] = -1000;
+					skeleton_x[i] = -1000; //both die
+					skeleton_y[i] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					ActiveEnemies --;
+				}
+			}
+		}
+		
+		//invisman collision
+		for (int j = 0; j < invisibleManCount; j++) {
+			if (invisibleMan_x[j] > 0) {
+				if (!(chelnov_x[i] < invisibleMan_x[j] - chelnov_size || chelnov_x[i] > invisibleMan_x[j] + chelnov_size) && !(chelnov_y[i] < invisibleMan_y[j] - chelnov_size || chelnov_y[i] > invisibleMan_y[j] + chelnov_size)) {
+					invisibleMan_x[j] = -1000;
+					invisibleMan_y[j] = -1000;
+					chelnov_x[i] = -1000; //both die
+					chelnov_y[i] = -1000;
+					chelnovShotVelX[i] = 0;
+					chelnovShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		//chelnov collision
+		for (int j = 0; j < chelnovCount; j++) {
+			if (j!=i && chelnov_x[j] > 0) {
+				if (!(chelnov_x[i] < chelnov_x[j] - chelnov_size || chelnov_x[i] > chelnov_x[j] + chelnov_size) && !(chelnov_y[i] < chelnov_y[j] - chelnov_size || chelnov_y[i] > chelnov_y[j] + chelnov_size)) {
+					chelnov_x[j] = -1000;
+					chelnov_y[j] = -1000;
+					skeleton_x[i] = -1000;
+					skeleton_y[i] = -1000;
+					SkeletonShotVelX[i] = 0;
+					SkeletonShotVelY[i] = 0;
+					ActiveEnemies--;
+				}
+			}
+		}
+		
+		
+		chelnovSp[i].setPosition(chelnov_x[i], chelnov_y[i]);
+		return;
+			
+	}
 	
 	
 	
@@ -3552,52 +4033,6 @@ void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[]
 
     FrameCount++;
     return;//end of func
-}
 
-
-
-void dynamtest(RenderWindow& window)
-{
-	int numberEnemies=20;
-	cin>>numberEnemies;
-	int * EnemyType=new int[numberEnemies]; //an array of the size of enemies 1 ghost 2 skel 3 invis 4 chelnov
-	int ** EnemyPos= new int*[numberEnemies]; //an array of the size of enemies 
-		
-	 for(int i=0; i<numberEnemies; i++){
-        EnemyPos[i]=new int[2];
-    }
-
-	int ghost;
-	int skel;
-	int chel;
-	int invis;	
-	cout<<"How many ghosts ";
-	cin>>ghost;
-	cout<<"How many skels ";
-	cin>>skel;
-	cout<<"how many chels ";
-	cin>>chel;
-	
-	Sprite *ghostsp=new Sprite[ghost];
-	Texture ghostTex;
-	ghostTex.loadFromFile("Data/player.png");
-
-	for(int i=0;i<ghost;i++)
-	{
-		EnemyType[i]=1;
-		EnemyPos[i][0]=64*i;
-		EnemyPos[i][1]=64*i;
-
-		//Sprite *ghostsp=new Sprite[ghost];
-		ghostsp[i].setTexture(ghostTex);
-		ghostsp[i].setPosition(EnemyPos[i][0],EnemyPos[i][1]);
-		window.draw(ghostsp[i]);
 
 	}
-	window.display();
-	int temp;
-	cin>>temp;
-	
-
-
-}
