@@ -35,10 +35,11 @@ void power_display(int power_x, int power_y, Texture& texpower, Sprite& power,in
 bool power_up(int power_x, int power_y, float player_x, float player_y, int playerWidth, int playerHeight,bool& powerPlaced,int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width,int &prevlife);
 
 bool remove_power(int power_select, int& speed,int& lives, int& vacuum_range, int& vacuum_width);
-void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies);
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[]);
 
 void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[], bool chelnovMovingLeft[], int i, float& player_x, float& player_y, char **lvl, Sprite &PlayerSprite, int cell_size, int PlayerHeight, int height, bool chelnovIdle[], int & lives, const int chelnovCount, int currentchelnov, bool posChangeHappened[], int FramePosForChange[], bool& FirstRun, bool chelnovJumping[], int jumpCoolDown[], bool chelnovBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int captured_enemies_type[], float chelnovShotVelX[], float chelnovShotVelY[]);
 
+void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap, int & lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[], int& ActiveEnemies);
 
 void floatingGhost(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool GhostMovingLeft[],int i,float& player_x,float& player_y,char **lvl,Sprite &PlayerSprite,int cell_size,int PlayerHeight,int height, bool GhostBeingPulled[], int captured_enemies_index[], int& captured_count, int PlayerWidth, int vacuum_x, int vacuum_y, int maxcap,int &lives, int captured_enemies_type[], float GhostShotVelX[], float GhostShotVelY[], int GhostBounceCount[]);
 
@@ -82,7 +83,10 @@ int main()
 	static int lives=3;
 	static int score=0;
 	bool ShowStart=1;
+	bool menuload=0;//for menu screen
 	bool pause=0;
+	Clock overclock;
+	bool clockreset=1;
 
 
 
@@ -355,8 +359,20 @@ int main()
 	
 	while (window.isOpen())
 	{
+
+
+
+		//presing esc so to exit any time
+		if (Keyboard::isKeyPressed(Keyboard::Escape))
+		{
+			window.close();
+		}
 				Sprite startSprite;
-				Texture startTex;Event event;
+				Texture startTex;
+				Sprite menupage;
+				Texture menutex;
+				
+				Event event;
 			while(window.pollEvent(event)) {
     		if(event.type == Event::KeyPressed) {
         		if(event.key.code == Keyboard::P)
@@ -387,6 +403,20 @@ int main()
 				
 			
 			}
+
+			if(menuload){
+				menutex.loadFromFile("Data/menu-min.png");
+				menupage.setTexture(menutex);
+				menupage.setPosition(0,0);
+
+				float scaleX = (width * cell_size) / (float)menutex.getSize().x;
+				float scaleY = (height * cell_size) / (float)menutex.getSize().y;
+				menupage.setScale(scaleX, scaleY);
+
+				window.draw(menupage);
+				window.display();
+
+			}
 		
 		
 		
@@ -405,11 +435,15 @@ int main()
 				window.draw(bgSprite);
 				window.display();
 
-				int temp;
-				cin>>temp;
-
+				if(clockreset)// avoid restarting agian again
+					{overclock.restart();
+						clockreset=0;
+					}
+					if(overclock.getElapsedTime().asSeconds()<=3.0f)
+					continue;
+					menuload=1;
 				cout<<"game over"<<endl;
-					break;
+					
 
 			}
 
@@ -454,6 +488,7 @@ int main()
 
 			if(Keyboard::isKeyPressed(Keyboard::Space)){
 				ShowStart=0;
+				menuload=1;
 				
 			}
 			continue;
@@ -461,9 +496,70 @@ int main()
 		}	//if the user presses the space key dont show start
 
 
+		
+		while (window.pollEvent(ev))
+		{
+				
+			if(ev.type == Event::Resized)
+				{ //resize the start screen if the user resizes the window
+					
+					if(menuload){
+						menutex.loadFromFile("Data/menu-min.png");
+						menupage.setTexture(menutex);
+						menupage.setPosition(0,0);
+
+						float scaleX = (width * cell_size) / (float)menutex.getSize().x;
+						float scaleY = (height * cell_size) / (float)menutex.getSize().y;
+						menupage.setScale(scaleX, scaleY);
+
+						window.draw(menupage);
+						window.display();
+
+					}
+
+				}
+			
+			if (ev.type == Event::Closed) 
+			{
+				window.close();
+			}
+			
+
+		}
 
 
+		if(menuload){
 
+			if(Keyboard::isKeyPressed(Keyboard::Num1)){
+				menuload=0;
+				clockreset=1;//for reset clock of lost agian
+				level=1;
+				
+			}
+			else if(Keyboard::isKeyPressed(Keyboard::Num2))
+			{	clockreset=1;//for reset clock of lost agian
+				menuload=0;
+				level=2;
+			}
+			else if(Keyboard::isKeyPressed(Keyboard::Num3)){
+				clockreset=1;//for reset clock of lost agian
+				menuload=0;
+				level=3;
+				
+			}
+			else if(Keyboard::isKeyPressed(Keyboard::Num4)){
+				clockreset=1;//for reset clock of lost agian
+				menuload=0;
+				level=4;
+				
+			}
+			
+
+		}	//level selection module
+		if(menuload)
+		{lives=3;
+		continue;
+		}
 		
 
 	
@@ -485,11 +581,7 @@ int main()
 		// vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
 
 
-		//presing escape to close
-		if (Keyboard::isKeyPressed(Keyboard::Escape))
-		{
-			window.close();
-		}
+		
 
 		window.clear();
 
@@ -501,7 +593,7 @@ int main()
 		
 		
 		
-		level=1; // changed level for testing
+		 // changed level for testing
 		if(level==1){
 			
 			if(Keyboard::isKeyPressed(Keyboard::L)) // reload level at pressing l
@@ -530,7 +622,7 @@ int main()
 						blockSprite.setTexture(blockTexture);
 
 
-						bgTex.loadFromFile("Data/volcanic.jpeg");
+						bgTex.loadFromFile("Data/cyberpunk.jpeg");
 						bgSprite.setTexture(bgTex);
 
 						float scaleX = (width * cell_size) / (float)bgTex.getSize().x;
@@ -596,70 +688,35 @@ void ghostMove(int Ghost_x[],int Ghost_y[],int width,Sprite GhostSp[],bool Ghost
 	
 	
 	if (GhostShotVelX[i] != 0 || GhostShotVelY[i] != 0) { //movement for shot
-	
 		int next_x = Ghost_x[i] + (int)GhostShotVelX[i]; //x movemnet
-		
-		int gridX = next_x / cell_size; //coords
+		int gridX = Ghost_x[i] / cell_size;
 		int gridY = Ghost_y[i] / cell_size;
 		
 		
-		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) 
-		{ //if left or right border or hitting a platform
-			GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
-			GhostBounceCount[i]++;
+		if (next_x <= 0 || next_x >= (width - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#')) { //if left or right border, or hitting a platform, or going out
+		GhostShotVelX[i] = -GhostShotVelX[i]; //reverse X direction, bounce
+		GhostBounceCount[i]++;
 		}
 		else Ghost_x[i] = next_x;
+		} 
 		
-		//y movement
-		GhostShotVelY[i] += 1; //gravity is 1, too annoying to pass in fn
-		if (GhostShotVelY[i] > 20) 
-			GhostShotVelY[i] = 20; //terminal velocity clamp
 		
-		int next_y = Ghost_y[i] + (int)GhostShotVelY[i];
-		gridX = Ghost_x[i] / cell_size; //uses updated x position
-		gridY = next_y / cell_size;
 		
-		if (next_y <= 0 || next_y >= (height - 1) * cell_size || (gridX >= 0 && gridX < width && gridY >= 0 && gridY < height && lvl[gridY][gridX] == '#'))
-		{ //if hit top and bottom border or platforms
-			if (GhostShotVelY[i] > 0) { //if moving down
-				GhostShotVelY[i] = 0; //stop falling
-				if (gridY < height) 
-					Ghost_y[i] = (gridY - 1) * cell_size;
-				if (GhostShotVelX[i] == 0) {//if fell striagght down choose random directin t roll to
-					if (rand() % 2 == 0)
-						GhostShotVelX[i] = 10; //right
-					else GhostShotVelX[i] = -10; //left
-					}
-				}
-				
-			else if (GhostShotVelY[i] < 0) { //moving up
-				GhostShotVelY[i] = 0;
-				if (GhostShotVelX[i] == 0) { //no vertical movemnt, same random logic
-				if (rand() % 2 == 0)
-						GhostShotVelX[i] = 15; //right
-					else GhostShotVelX[i] = -15; //left
-					}
-				}
-				
-		} //if not hitting platforms
-		else Ghost_y[i] = next_y;
 		
-		if (GhostBounceCount[i] >= 5) {
-			GhostShotVelX[i] = 0;
-			GhostShotVelY[i] = 0;
-			Ghost_x[i] = -1000;
-			Ghost_y[i] = -1000;
-			ActiveEnemies--;
-		}
 		//--- CONTINUE THIS, REPLICATE FOR SKELLY AND INVIS, ADD GRAV ---
 		
-		GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
-		return;
+		
+		
 			
-	}	
 			
+		//Ghost_y[i] += (int)GhostShotVelY[i];
+		//if (Ghost_y[i] <= 0 || Ghost_y[i] >= (height - 1) * cell_size) { //it hits top or bottom border
+		//GhostShotVelY[i] = -GhostShotVelY[i]; //reverse Y
+		//GhostSp[i].setPosition(Ghost_x[i], Ghost_y[i]);
+		//return;
 	
-	//vacuum pulling
+	
+	
 	float vacuum_start_x, vacuum_start_y;
 	
 	if (vacuum_x == 1) { //aiming right
@@ -2797,7 +2854,7 @@ void invisibleManMove(int invisibleMan_x[],int invisibleMan_y[],int width,Sprite
 				invisibleManSp[i].setOrigin(0,0);	
 			}
 		}
-		//ensuer enuf frames have passed for random movement change again
+		//ensuer enouh frames have passed for random movement change again
 
 
 	if(FrameCount-FramePosForChange[i]==1200ull)
@@ -3003,12 +3060,12 @@ void singleShot(float player_x, float player_y, int PlayerWidth, int PlayerHeigh
 			vacuum_start_y = player_y + PlayerHeight;
 			} else vacuum_start_y = player_y + PlayerHeight/2; //if aiming left or right, use vertical center
 			
-			float speed = 18; //was 15, increased
+			float speed = 15;
 			float velX = 0, velY = 0;
 			
 			if (vacuum_x != 0) { //horizotal shot
 				velX = vacuum_x * speed; //if x 1, vel = 15 and if x -1 then vel = -15
-				velY = vacuum_y * speed/2; //
+				velY = vacuum_y * speed/2; //no vertical movment
 				}
 			else if (vacuum_y != 0) { //vertical shot
 				velX = 0; //no horizontal movemtn
@@ -3430,4 +3487,3 @@ void chelnovMove(int chelnov_x[], int chelnov_y[], int width, Sprite chelnovSp[]
 	}
 }
 }
-
