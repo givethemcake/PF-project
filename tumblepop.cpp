@@ -208,8 +208,9 @@ int main()
 	Sprite bgSprite;
 	Texture blockTexture;
 	Sprite blockSprite;
-
-
+	// menu texture and sprite
+	Texture menutex;
+	Sprite menupage;
 	
 	bgTex.loadFromFile("Data/bg.png");
 	bgSprite.setTexture(bgTex);
@@ -365,7 +366,13 @@ int main()
 
 	
 	while (window.isOpen())
-	{
+	{			
+
+				//presing escape to close
+		if (Keyboard::isKeyPressed(Keyboard::Escape))
+		{
+			window.close();
+		}
 				Sprite startSprite;
 				Texture startTex;Event event;
 			while(window.pollEvent(event)) {
@@ -468,8 +475,16 @@ int main()
 				window.draw(bgSprite);
 				window.display();
 
-				int temp;
-				cin>>temp;
+				if(clockreset)
+				{
+					overclock.restart();
+					clockreset=0;
+				}
+					if(overclock.getElapsedTime().asSeconds()<=3)
+					{
+						continue;
+					}
+				
 
 				cout<<"game over"<<endl;
 					break;
@@ -517,7 +532,7 @@ int main()
 
 			if(Keyboard::isKeyPressed(Keyboard::Space)){
 				ShowStart=0;
-				
+				menuload=1;
 			}
 			continue;
 
@@ -571,12 +586,14 @@ int main()
 				menuload=0;
 				level=2;
 				FirstRun=1;
+				playerload=1;
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num3)){
 				clockreset=1;//for reset clock of lost agian
 				menuload=0;
 				level=3;
 				FirstRun=1;
+				playerload=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num4)){
@@ -584,6 +601,7 @@ int main()
 				menuload=0;
 				level=4;
 				FirstRun=1;
+				playerload=1;
 			}
 			
 
@@ -613,11 +631,7 @@ int main()
 		// vacuum_suck(player_x, player_y,  PlayerWidth, PlayerHeight, vacuum_x, vacuum_y, maxcap, vacuum_range,  vacuum_width, captured_enemies_index,  captured_count,  Ghost_x, Ghost_y,  8, GhostBeingPulled);//replcaed num_ghosts with 8 for testing 
 
 
-		//presing escape to close
-		if (Keyboard::isKeyPressed(Keyboard::Escape))
-		{
-			window.close();
-		}
+		
 
 		window.clear();
 
