@@ -85,11 +85,13 @@ int main()
 	static bool FirstRun=1;
 	static int lives=3;
 	static int score=0;
-	bool ShowStart=1;
+	bool ShowStart=1;//diplay starting window
 	bool menuload=0;//for menu screen
 	bool pause=0;
+	bool playerload=0;
+	int player;// 1 for green and two for yellow
 	Clock overclock;
-	bool clockreset=1;
+	bool clockreset=1;//for wat in game over
 
 
 
@@ -170,7 +172,11 @@ int main()
 	int maxcap = 3;
 	int vacuum_range = 200;
 	int vacuum_width = 50;
-	
+	if(player==2)//yellow tumble poper power bonus
+	{
+		vacuum_range=static_cast<float>(vacuum_range)*1.2;
+		vacuum_width=static_cast<float>(vacuum_range)*1.2;
+	}
 	//all enemy arrays
 	const int skeletonCount=4;
 	const int GhostCount=8;
@@ -236,8 +242,10 @@ int main()
 	float player_y = 150;
 	int frarmeWidth=64;
 	int frameHeight=64;
-
+	
 	int speed=5;
+	if(player==1)
+	speed=static_cast<float>(speed)*1.5;
 	float velocityX=1;
 	float terminal_Velocity_x=5;
 	float friction=0.8;
@@ -406,8 +414,46 @@ int main()
 				
 			
 			}
+			
 
-			if(menuload){
+
+
+
+			if(playerload)
+			{	Texture selecttex;
+				Sprite selectsp;
+				selecttex.loadFromFile("Data/selection.png");
+				selectsp.setTexture(selecttex);
+				selectsp.setPosition(0,0);
+
+				float scaleX = (width * cell_size) / (float)selecttex.getSize().x;
+				float scaleY = (height * cell_size) / (float)selecttex.getSize().y;
+				selectsp.setScale(scaleX, scaleY);
+
+				window.draw(selectsp);
+				window.display();
+
+				
+				if(Keyboard::isKeyPressed(Keyboard::Num2))
+				{
+					player =2;
+					playerload=0;
+				}
+				else if(Keyboard::isKeyPressed(Keyboard::Num1))
+				{
+					player =1;
+					playerload=0;
+				}
+				else continue;
+				
+
+			}
+
+
+
+
+
+			if(menuload){ // module to load menu 
 				menutex.loadFromFile("Data/menu-min.png");
 				menupage.setTexture(menutex);
 				menupage.setPosition(0,0);
@@ -540,6 +586,7 @@ int main()
 				clockreset=1;//for reset clock of lost agian
 				level=1;
 				FirstRun=1;
+				playerload=1;
 				
 			}
 			else if(Keyboard::isKeyPressed(Keyboard::Num2))
